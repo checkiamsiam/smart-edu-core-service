@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint-fix": "eslint --ext .js,.ts src/ --fix",
     "format": "prettier --write src/**/*.{js,ts,json}",
-    "lint&format": "yarn lint-fix && yarn format",
+    "lint&format": "yarn lint-fix && yarn format && npx prisma format",
     "prepare": "husky install"
   },
   "keywords": [],
