@@ -1,17 +1,9 @@
 import { AcademicDepartment, Prisma } from "@prisma/client";
-import httpStatus from "http-status";
 import prismaHelper from "../../helpers/prisma.helper";
 import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
-import AppError from "../../utils/customError.util";
 
 const create = async (payload: AcademicDepartment): Promise<AcademicDepartment> => {
-  const isExist = await prisma.academicDepartment.findFirst({
-    where: payload,
-  });
-  if (isExist) {
-    throw new AppError("Academic Department already exists", httpStatus.CONFLICT);
-  }
   const newAd = await prisma.academicDepartment.create({
     data: payload,
   });
@@ -21,7 +13,7 @@ const create = async (payload: AcademicDepartment): Promise<AcademicDepartment> 
 const getAcademicDepartments = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<AcademicDepartment>> => {
   const whereConditions: Prisma.AcademicDepartmentWhereInput = prismaHelper.findManyQueryHelper<Prisma.AcademicDepartmentWhereInput>(queryFeatures, {
     searchFields: ["title"],
-    relationalFields: {academicFacultyId: "academicFaculty"}
+    relationalFields: { academicFacultyId: "academicFaculty" },
   });
 
   const query: Prisma.AcademicDepartmentFindManyArgs = {

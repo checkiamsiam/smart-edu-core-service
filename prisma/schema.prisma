@@ -22,41 +22,41 @@ model AcademicSemester {
 }
 
 model AcademicFaculty {
-  id                 String               @id @default(uuid())
-  title              String
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  students           Student[]
-  faculties          Faculty[]
-  academicDepartment AcademicDepartment[]
+  id                  String               @id @default(uuid())
+  title               String               @unique
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  students            Student[]
+  faculties           Faculty[]
+  academicDepartments AcademicDepartment[]
 
   @@map("academic_faculty")
 }
 
 model AcademicDepartment {
   id                String          @id @default(uuid())
-  title             String
+  title             String          @unique
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   academicFaculty   AcademicFaculty @relation(fields: [academicFacultyId], references: [id])
   academicFacultyId String
   students          Student[]
-  facultiesy         Faculty[]
+  faculties         Faculty[]
 
   @@map("academic_departments")
 }
 
 model Student {
-  id           String   @id @default(uuid()) 
-  studentId    String  
+  id           String   @id @default(uuid())
+  studentId    String   @unique
   firstName    String
   lastName     String
-  middleName   String
-  profileImage String
-  email        String 
-  contactNo    String
+  middleName   String?
+  profileImage String?
+  email        String   @unique
+  contactNo    String   @unique
   gender       String
-  bloodGroup   String
+  bloodGroup   String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -74,15 +74,15 @@ model Student {
 
 model Faculty {
   id           String   @id @default(uuid())
-  facultyId    String
+  facultyId    String   @unique
   firstName    String
   lastName     String
-  middleName   String
-  profileImage String
-  email        String
-  contactNo    String
+  middleName   String?
+  profileImage String?
+  email        String   @unique
+  contactNo    String   @unique
   gender       String
-  bloodGroup   String
+  bloodGroup   String?
   designation  String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

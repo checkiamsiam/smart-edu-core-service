@@ -1,17 +1,9 @@
 import { Prisma, Student } from "@prisma/client";
-import httpStatus from "http-status";
 import prismaHelper from "../../helpers/prisma.helper";
 import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
-import AppError from "../../utils/customError.util";
 
 const create = async (payload: Student): Promise<Student> => {
-  const isExist = await prisma.student.findFirst({
-    where: payload,
-  });
-  if (isExist) {
-    throw new AppError("Student already exists", httpStatus.CONFLICT);
-  }
   const newStudent = await prisma.student.create({
     data: payload,
   });

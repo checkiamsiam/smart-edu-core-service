@@ -1,17 +1,9 @@
 import { AcademicFaculty, Prisma } from "@prisma/client";
-import httpStatus from "http-status";
 import prismaHelper from "../../helpers/prisma.helper";
 import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
-import AppError from "../../utils/customError.util";
 
 const create = async (payload: AcademicFaculty): Promise<AcademicFaculty> => {
-  const isExist = await prisma.academicFaculty.findFirst({
-    where: payload,
-  });
-  if (isExist) {
-    throw new AppError("Academic Faculty already exists", httpStatus.CONFLICT);
-  }
   const newAf = await prisma.academicFaculty.create({
     data: payload,
   });
