@@ -2,9 +2,10 @@ export interface IQueryFeatures {
   page: number;
   limit: number;
   skip: number;
-  fields: { [key: string]: number };
+  fields: { [key: string]: boolean };
   filters: object;
-  sort: { [key: string]: -1 | 1 };
+  populate: { [key: string]: boolean };
+  sort: { [key: string]: "asc" | "desc" };
   searchKey: string;
 }
 

@@ -47,13 +47,13 @@ model AcademicDepartment {
 }
 
 model Student {
-  id           String   @id @default(uuid())
-  studentId    String
+  id           String   @id @default(uuid()) 
+  studentId    String  
   firstName    String
   lastName     String
   middleName   String
   profileImage String
-  email        String
+  email        String 
   contactNo    String
   gender       String
   bloodGroup   String
