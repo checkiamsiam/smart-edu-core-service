@@ -3,11 +3,14 @@ import queryFeatures from "../../middleware/queryFeatures.middleware";
 import validateRequest from "../../middleware/validateRequest.middleware";
 import academicFacultyController from "./academicFaculty.controller";
 import academicFacultyValidation from "./academicFaculty.validation";
+import authorization from "../../middleware/authorization.middleware";
+import { userRoleEnum } from "../../constants/userRole.enum";
 
 const academicFacultyRoutes: Router = express.Router();
 
 academicFacultyRoutes.post(
   "/create",
+  authorization(userRoleEnum.admin),
   validateRequest(academicFacultyValidation.createAcademicFacultyReq),
   academicFacultyController.createAcademicFaculty
 );
@@ -18,10 +21,11 @@ academicFacultyRoutes.get("/:id", queryFeatures("single"), academicFacultyContro
 
 academicFacultyRoutes.put(
   "/update/:id",
+  authorization(userRoleEnum.admin),
   validateRequest(academicFacultyValidation.updateAcademicFacultyReq),
   academicFacultyController.updateAcademicFaculty
 );
 
-academicFacultyRoutes.delete("/delete/:id", academicFacultyController.deleteAcademicFaculty);
+academicFacultyRoutes.delete("/delete/:id", authorization(userRoleEnum.admin), academicFacultyController.deleteAcademicFaculty);
 
 export default academicFacultyRoutes;
