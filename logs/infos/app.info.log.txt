@@ -1,0 +1,1 @@
+logs\infos\20230825-0000-01-app.info.log
