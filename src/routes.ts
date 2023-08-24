@@ -1,4 +1,6 @@
 import express, { Router } from "express";
+import buildingRoutes from "./modules/Building/building.route";
+import roomRoutes from "./modules/Room/room.route";
 import academicDepartmentRoutes from "./modules/academicDepartment/academicDepartment.route";
 import academicFacultyRoutes from "./modules/academicFaculty/academicFaculty.route";
 import academicSemesterRoutes from "./modules/academicSemester/academicSemester.route";
@@ -27,6 +29,14 @@ const routes: { path: string; route: Router }[] = [
   {
     path: "/academic-department",
     route: academicDepartmentRoutes,
+  },
+  {
+    path: "/building",
+    route: buildingRoutes,
+  },
+  {
+    path: "/room",
+    route: roomRoutes,
   },
 ];
 
