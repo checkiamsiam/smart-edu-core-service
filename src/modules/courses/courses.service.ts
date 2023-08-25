@@ -129,10 +129,27 @@ const updateCourse = async (id: string, payload: Partial<Course>): Promise<Parti
 };
 
 const deleteCourse = async (id: string) => {
-  const result: Partial<Course> | null = await prisma.course.delete({
-    where: {
-      id,
-    },
+  const result: Course = await prisma.$transaction(async (tx) => {
+    await tx.courseToPrerequisite.deleteMany({
+      where: {
+        OR: [
+          {
+            courseId: id,
+          },
+          {
+            preRequisiteId: id,
+          },
+        ],
+      },
+    });
+
+    const deleteFromCourseTable = await tx.course.delete({
+      where: {
+        id,
+      },
+    });
+
+    return deleteFromCourseTable;
   });
 
   return result;
