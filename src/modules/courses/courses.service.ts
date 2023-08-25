@@ -1,27 +1,62 @@
 import { Course, Prisma } from "@prisma/client";
+import httpStatus from "http-status";
 import prismaHelper from "../../helpers/prisma.helper";
 import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
+import AppError from "../../utils/customError.util";
 import { ICourseCreateData } from "./course.interface";
 
 const create = async (payload: ICourseCreateData): Promise<Course> => {
   const { preRequisiteCourses, ...data } = payload;
-  const newCourse = await prisma.course.create({
-    data,
+
+  const newCourseIncluded: Course | null = await prisma.$transaction(async (tx) => {
+    const newCourse = await tx.course.create({
+      data,
+    });
+
+    if (!newCourse) {
+      throw new AppError("course not created", httpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+      const createManyData = preRequisiteCourses.map((el) => {
+        return {
+          courseId: newCourse.id,
+          preRequisiteId: el.courseId,
+        };
+      });
+      await tx.courseToPrerequisite.createMany({
+        data: createManyData,
+      });
+    }
+
+    const result = await tx.course.findUnique({
+      where: {
+        id: newCourse.id,
+      },
+      include: {
+        _count: true,
+        preRequisite: {
+          include: {
+            preRequisite: true,
+          },
+        },
+        preRequisiteFor: {
+          include: {
+            course: true,
+          },
+        },
+      },
+    });
+
+    return result;
   });
-  if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-    const createManyData = preRequisiteCourses.map((el) => {
-      return {
-        courseId: newCourse.id,
-        preRequisiteId: el.courseId,
-      };
-    });
-    await prisma.courseToPrerequisite.createMany({
-      data: createManyData,
-    });
+
+  if (!newCourseIncluded) {
+    throw new AppError("course not created", httpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  return newCourse;
+  return newCourseIncluded;
 };
 
 const getCourses = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<Course>> => {
