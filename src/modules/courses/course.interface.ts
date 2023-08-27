@@ -1,4 +1,4 @@
-export type ICourseCreateData = {
+export type ICourse = {
   title: string,
   code: string,
   credits: number,
@@ -7,5 +7,5 @@ export type ICourseCreateData = {
 
 export type IPrerequisiteCourseRequest = {
   courseId: string,
-  isDeleted?: null
+  isRemove?: null
 }

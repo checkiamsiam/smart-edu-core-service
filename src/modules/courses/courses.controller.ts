@@ -5,10 +5,10 @@ import catchAsyncErrors from "../../utils/catchAsyncError.util";
 import AppError from "../../utils/customError.util";
 import sendResponse from "../../utils/sendResponse.util";
 import courseService from "./courses.service";
-import { ICourseCreateData } from "./course.interface";
+import { ICourse } from "./course.interface";
 
 const createCourse: RequestHandler = catchAsyncErrors(async (req: Request, res: Response) => {
-  const body: ICourseCreateData = req.body;
+  const body: ICourse = req.body;
   const result = await courseService.create(body);
   sendResponse<Course>(res, {
     statusCode: httpStatus.OK,
@@ -46,9 +46,8 @@ const getSingleCourse: RequestHandler = catchAsyncErrors(async (req: Request, re
 
 const updateCourse: RequestHandler = catchAsyncErrors(async (req: Request, res: Response) => {
   const id: string = req.params.id;
-  const updatePayload: Partial<Course> = req.body;
 
-  const result: Partial<Course> | null = await courseService.updateCourse(id, updatePayload);
+  const result: Partial<Course> | null = await courseService.updateCourse(id, req.body);
 
   if (!result) {
     throw new AppError("Requested Document Not Found", httpStatus.NOT_FOUND);

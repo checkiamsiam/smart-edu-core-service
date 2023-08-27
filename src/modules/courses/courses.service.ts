@@ -4,9 +4,9 @@ import prismaHelper from "../../helpers/prisma.helper";
 import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 import AppError from "../../utils/customError.util";
-import { ICourseCreateData } from "./course.interface";
+import { ICourse, IPrerequisiteCourseRequest } from "./course.interface";
 
-const create = async (payload: ICourseCreateData): Promise<Course> => {
+const create = async (payload: ICourse): Promise<Course> => {
   const { preRequisiteCourses, ...data } = payload;
 
   const newCourseIncluded: Course | null = await prisma.$transaction(async (tx) => {
@@ -19,7 +19,7 @@ const create = async (payload: ICourseCreateData): Promise<Course> => {
     }
 
     if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-      const createManyData = preRequisiteCourses.map((el) => {
+      const createManyData = preRequisiteCourses.map((el: IPrerequisiteCourseRequest) => {
         return {
           courseId: newCourse.id,
           preRequisiteId: el.courseId,
@@ -117,15 +117,77 @@ const getSingleCourse = async (id: string): Promise<Partial<Course> | null> => {
   return result;
 };
 
-const updateCourse = async (id: string, payload: Partial<Course>): Promise<Partial<Course> | null> => {
-  const result: Partial<Course> | null = await prisma.course.update({
+const updateCourse = async (id: string, payload: Partial<ICourse>): Promise<Partial<Course> | null> => {
+  const { preRequisiteCourses, ...courseData } = payload;
+
+  await prisma.$transaction(async (transactionClient) => {
+    const result = await transactionClient.course.update({
+      where: {
+        id,
+      },
+      data: courseData,
+    });
+
+    if (!result) {
+      throw new AppError("Unable to update course", httpStatus.BAD_REQUEST);
+    }
+
+    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+      const deletePrerequisite = preRequisiteCourses.filter((coursePrerequisite) => coursePrerequisite.courseId && coursePrerequisite.isRemove);
+
+      const newPrerequisite = preRequisiteCourses.filter((coursePrerequisite) => coursePrerequisite.courseId && !coursePrerequisite.isRemove);
+
+      console.log(deletePrerequisite);
+
+      deletePrerequisite.forEach(async (deletePreCourse) => {
+        await transactionClient.courseToPrerequisite.deleteMany({
+          where: {
+            AND: [
+              {
+                courseId: id,
+              },
+              {
+                preRequisiteId: deletePreCourse.courseId,
+              },
+            ],
+          },
+        });
+      });
+
+      const createManyData = newPrerequisite.map((el: IPrerequisiteCourseRequest) => {
+        return {
+          courseId: id,
+          preRequisiteId: el.courseId,
+        };
+      });
+
+      await transactionClient.courseToPrerequisite.createMany({
+        data: createManyData,
+      });
+    }
+
+    return result;
+  });
+
+  const responseData = await prisma.course.findUnique({
     where: {
       id,
     },
-    data: payload,
+    include: {
+      preRequisite: {
+        include: {
+          preRequisite: true,
+        },
+      },
+      preRequisiteFor: {
+        include: {
+          course: true,
+        },
+      },
+    },
   });
 
-  return result;
+  return responseData;
 };
 
 const deleteCourse = async (id: string) => {
