@@ -96,6 +96,11 @@ const getSingleCourse = async (id: string): Promise<Partial<Course> | null> => {
   const query: Prisma.CourseFindUniqueArgs = {
     include: {
       _count: true,
+      faculties: {
+        include: {
+          faculty: true,
+        },
+      },
       preRequisite: {
         include: {
           preRequisite: true,
@@ -217,54 +222,47 @@ const deleteCourse = async (id: string) => {
   return result;
 };
 
-const assignFaculties = async (
-  id: string,
-  payload: string[]
-): Promise<CourseFaculty[]> => {
+const assignFaculties = async (id: string, payload: string[]): Promise<CourseFaculty[]> => {
   await prisma.courseFaculty.createMany({
-      data: payload.map((facultyId) => ({
-          courseId: id,
-          facultyId: facultyId
-      }))
-  })
+    data: payload.map((facultyId) => ({
+      courseId: id,
+      facultyId: facultyId,
+    })),
+  });
 
   const assignFacultiesData = await prisma.courseFaculty.findMany({
-      where: {
-          courseId: id
-      },
-      include: {
-          faculty: true
-      }
-  })
+    where: {
+      courseId: id,
+    },
+    include: {
+      faculty: true,
+    },
+  });
 
   return assignFacultiesData;
-}
+};
 
-const removeFaculties = async (
-  id: string,
-  payload: string[]
-): Promise<CourseFaculty[] | null> => {
+const removeFaculties = async (id: string, payload: string[]): Promise<CourseFaculty[] | null> => {
   await prisma.courseFaculty.deleteMany({
-      where: {
-          courseId: id,
-          facultyId: {
-              in: payload
-          }
-      }
-  })
+    where: {
+      courseId: id,
+      facultyId: {
+        in: payload,
+      },
+    },
+  });
 
   const assignFacultiesData = await prisma.courseFaculty.findMany({
-      where: {
-          courseId: id
-      },
-      include: {
-          faculty: true
-      }
-  })
+    where: {
+      courseId: id,
+    },
+    include: {
+      faculty: true,
+    },
+  });
 
-  return assignFacultiesData
-}
-
+  return assignFacultiesData;
+};
 
 const courseService = {
   create,
@@ -273,7 +271,7 @@ const courseService = {
   updateCourse,
   deleteCourse,
   assignFaculties,
-  removeFaculties
+  removeFaculties,
 };
 
 export default courseService;

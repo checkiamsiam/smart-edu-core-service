@@ -92,7 +92,7 @@ model Faculty {
 
   academicFaculty   AcademicFaculty @relation(fields: [academicFacultyId], references: [id])
   academicFacultyId String
-  CourseFaculty     CourseFaculty[]
+  courses     CourseFaculty[]
 
   @@map("faculties")
 }
@@ -129,7 +129,7 @@ model Course {
   updatedAt       DateTime               @updatedAt
   preRequisite    CourseToPrerequisite[] @relation("CourseToPrerequisite")
   preRequisiteFor CourseToPrerequisite[] @relation("PrerequisiteToCourse")
-  CourseFaculty   CourseFaculty[]
+  faculties   CourseFaculty[]
 
   @@map("courses")
 }
