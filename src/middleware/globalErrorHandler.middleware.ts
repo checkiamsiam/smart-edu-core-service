@@ -8,24 +8,13 @@ import sendResponse from "../utils/sendResponse.util";
 type THandleErrorFunc = (err: any, res?: Response) => AppError;
 type THandleErrorResponse = (err: any, res: Response) => void;
 
-// handel cast error db
-const handelCastErrorDB: THandleErrorFunc = (err) => {
-  const message = `Invalid ${err.path}: ${err.value}.`;
-  return new AppError(message, httpStatus.BAD_REQUEST);
+const handlePrismaClientError: THandleErrorFunc = (error) => {
+  const splitMessage = error.message.split("\n");
+  const simplifiedMessage = splitMessage[splitMessage.length - 1];
+  return new AppError(simplifiedMessage, httpStatus.BAD_REQUEST);
 };
 
-// handel duplicate error
-const handelDuplicateErrorDB: THandleErrorFunc = (err) => {
-  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-  const message =
-    `Duplicate field value: ${value.trim()}. Please use another value!`.replace(
-      /['"]+/g,
-      ""
-    );
-  return new AppError(message, httpStatus.BAD_REQUEST);
-};
-
-// handel validation ( mongoose + zod ) error
+// handel Zod validation error
 const handelValidationErrorDB: THandleErrorFunc = (err) => {
   try {
     const errors = Object.values(err.errors).map((el: any) => el.message);
@@ -74,30 +63,20 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
   err.status = err.status || "error";
 
-  if (err.name === "CastError") {
-    err = handelCastErrorDB(err);
-  }
-
-  if (err.code === 11000) {
-    err = handelDuplicateErrorDB(err);
-  }
-
-  if (err.name === "ValidationError" || err.name === "ZodError") {
+  if (err.name === "ZodError") {
     err = handelValidationErrorDB(err);
   }
 
+  if (err.name === "PrismaClientValidationError" || err.name === "PrismaClientKnownRequestError") {
+    err = handlePrismaClientError(err);
+  }
+
   if (err.name === "JsonWebTokenError") {
-    err = new AppError(
-      "Invalid token. Please log in again!",
-      httpStatus.UNAUTHORIZED
-    );
+    err = new AppError("Invalid token. Please log in again!", httpStatus.UNAUTHORIZED);
   }
 
   if (err.name === "TokenExpiredError") {
-    err = new AppError(
-      "Token expired. Please log in again!",
-      httpStatus.UNAUTHORIZED
-    );
+    err = new AppError("Token expired. Please log in again!", httpStatus.UNAUTHORIZED);
   }
 
   if (config.isDevelopment) {

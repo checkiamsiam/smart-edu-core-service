@@ -99,7 +99,7 @@ const update = async (id: string, payload: Partial<SemesterRegistration>): Promi
   });
 
   if (!isExist) {
-    throw new AppError("Data not found!", httpStatus.BAD_REQUEST);
+    throw new AppError("Semester Registration not found!", httpStatus.BAD_REQUEST);
   }
 
   if (payload.status && isExist.status === SemesterRegistrationStatus.upcoming && payload.status !== SemesterRegistrationStatus.ongoing) {
