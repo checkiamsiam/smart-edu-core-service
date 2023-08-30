@@ -4,8 +4,8 @@ import httpStatus from "http-status";
 import catchAsyncErrors from "../../utils/catchAsyncError.util";
 import AppError from "../../utils/customError.util";
 import sendResponse from "../../utils/sendResponse.util";
-import courseService from "./courses.service";
 import { ICourse } from "./course.interface";
+import courseService from "./courses.service";
 
 const createCourse: RequestHandler = catchAsyncErrors(async (req: Request, res: Response) => {
   const body: ICourse = req.body;
@@ -74,11 +74,35 @@ const deleteCourse: RequestHandler = catchAsyncErrors(async (req: Request, res: 
   });
 });
 
+const assignFaculties = catchAsyncErrors(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await courseService.assignFaculties(id, req.body.faculties);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Course faculty assigned successfully",
+    data: result,
+  });
+});
+
+const removeFaculties = catchAsyncErrors(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await courseService.removeFaculties(id, req.body.faculties);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Course faculty deleted successfully",
+    data: result,
+  });
+});
+
 const courseController = {
   createCourse,
   getCourses,
   getSingleCourse,
   updateCourse,
   deleteCourse,
+  assignFaculties,
+  removeFaculties,
 };
 export default courseController;

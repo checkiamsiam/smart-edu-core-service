@@ -75,11 +75,36 @@ const deleteFaculty: RequestHandler = catchAsyncErrors(async (req: Request, res:
   });
 });
 
+
+const assignCourses = catchAsyncErrors(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await facultyService.assignCourses(id, req.body.courses);
+  sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Course faculty assigned successfully',
+      data: result
+  });
+})
+
+const removeCourses = catchAsyncErrors(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await facultyService.removeCourses(id, req.body.courses);
+  sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Course faculty deleted successfully',
+      data: result
+  });
+})
+
 const facultyControllers = {
   createFaculty,
   getFaculties,
   getSingleFaculty,
   updateFaculty,
   deleteFaculty,
+  assignCourses,
+  removeCourses
 };
 export default facultyControllers;

@@ -36,7 +36,16 @@ const updateCourseReq = z.object({
     })
 });
 
+const assignOrRemoveFaculties = z.object({
+    body: z.object({
+        faculties: z.array(z.string(), {
+            required_error: "Facultis are required"
+        })
+    })
+})
+
 export const courseValidation = {
     createCourseReq,
-    updateCourseReq
+    updateCourseReq,
+    assignOrRemoveFaculties
 };

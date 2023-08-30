@@ -18,4 +18,17 @@ coursesRoute.put("/update/:id", authorization(userRoleEnum.admin), validateReque
 
 coursesRoute.delete("/delete/:id", authorization(userRoleEnum.admin), courseController.deleteCourse);
 
+coursesRoute.post(
+  "/:id/assign-faculties",
+  validateRequest(courseValidation.assignOrRemoveFaculties),
+  authorization(userRoleEnum.admin),
+  courseController.assignFaculties
+);
+
+coursesRoute.delete(
+  "/:id/remove-faculties",
+  validateRequest(courseValidation.assignOrRemoveFaculties),
+  authorization(userRoleEnum.admin),
+  courseController.removeFaculties
+);
 export default coursesRoute;
