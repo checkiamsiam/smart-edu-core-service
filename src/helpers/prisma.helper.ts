@@ -23,7 +23,6 @@ const findManyQueryHelper = <T>(queryFeatures: IQueryFeatures, options: IOptions
     andConditions.push({
       AND: Object.keys(queryFeatures.filters).map((key) => {
         if (options.relationalFields && options.relationalFields[key]) {
-          console.log(options.relationalFields[key]);
           return {
             [options.relationalFields[key]]: {
               id: (queryFeatures.filters as any)[key],

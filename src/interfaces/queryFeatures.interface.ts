@@ -6,7 +6,7 @@ export interface IQueryFeatures {
   filters: object;
   populate: { [key: string]: boolean };
   sort: { [key: string]: "asc" | "desc" };
-  searchKey: string;
+  searchKey?: string;
 }
 
 export interface IQueryResult<T> {
