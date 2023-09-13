@@ -5,36 +5,29 @@ import { ICreateOfferedCourse } from "./offeredCourse.interface";
 
 const create = async (payload: ICreateOfferedCourse): Promise<OfferedCourse[]> => {
   const { academicDepartmentId, semesterRegistrationId, courseIds } = payload;
-  const result: OfferedCourse[] = [];
 
-  courseIds.forEach(async (courseId: string) => {
-    const alreadyExist = await prisma.offeredCourse.findFirst({
-      where: {
-        academicDepartmentId,
-        semesterRegistrationId,
-        courseId,
-      },
-    });
-
-    if (!alreadyExist) {
-      const insertOfferedCourse = await prisma.offeredCourse.create({
-        data: {
-          academicDepartmentId,
-          semesterRegistrationId,
-          courseId,
-        },
-        include: {
-          academicDepartment: true,
-          semesterRegistration: true,
-          course: true,
-        },
-      });
-
-      result.push(insertOfferedCourse);
-    }
+  await prisma.offeredCourse.createMany({
+    data: courseIds.map((courseId) => ({
+      academicDepartmentId,
+      semesterRegistrationId,
+      courseId,
+    })),
+    skipDuplicates: true,
   });
 
-  return result;
+  const insertOfferedCourse = await prisma.offeredCourse.findMany({
+    where: {
+      academicDepartmentId,
+      semesterRegistrationId,
+    },
+    include: {
+      academicDepartment: true,
+      semesterRegistration: true,
+      course: true,
+    },
+  });
+
+  return insertOfferedCourse;
 };
 
 const getOfferedCourse = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<OfferedCourse>> => {

@@ -89,6 +89,7 @@ const assignCourses = async (id: string, payload: string[]): Promise<CourseFacul
       facultyId: id,
       courseId: courseId,
     })),
+    skipDuplicates: true,
   });
 
   const assignCoursesData = await prisma.courseFaculty.findMany({
