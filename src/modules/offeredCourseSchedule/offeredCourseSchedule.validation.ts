@@ -26,6 +26,9 @@ const create = z
             facultyId: z.string({
                 required_error: 'Faculty id is required'
             }),
+            semesterRegistrationId: z.string({
+                required_error: 'Semester registration id is required'
+            }),
             offeredCourseSectionId: z.string({
                 required_error: 'Section id is required'
             })
