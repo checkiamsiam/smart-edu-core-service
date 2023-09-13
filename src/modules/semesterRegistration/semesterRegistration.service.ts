@@ -1,4 +1,4 @@
-import { Prisma, SemesterRegistration, SemesterRegistrationStatus } from "@prisma/client";
+import { Prisma, SemesterRegistration, SemesterRegistrationStatus, StudentSemesterRegistration } from "@prisma/client";
 import httpStatus from "http-status";
 import prismaHelper from "../../helpers/prisma.helper";
 import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
@@ -135,10 +135,73 @@ const deleteSemesterRegistration = async (id: string): Promise<SemesterRegistrat
   return result;
 };
 
+const startStudentRegistration = async (
+  authUserId: string
+): Promise<{
+  semesterRegistration: SemesterRegistration | null;
+  studentSemesterRegistration: StudentSemesterRegistration | null;
+}> => {
+  const studentInfo = await prisma.student.findFirst({
+    where: {
+      studentId: authUserId,
+    },
+  });
+
+  if (!studentInfo) {
+    throw new AppError("Student Info not found!", httpStatus.BAD_REQUEST);
+  }
+
+  const semesterRegistrationInfo = await prisma.semesterRegistration.findFirst({
+    where: {
+      status: {
+        in: [SemesterRegistrationStatus.ongoing, SemesterRegistrationStatus.upcoming],
+      },
+    },
+  });
+
+  if (semesterRegistrationInfo?.status === SemesterRegistrationStatus.upcoming) {
+    throw new AppError("Registration is not started yet", httpStatus.BAD_REQUEST);
+  }
+
+  let studentRegistration = await prisma.studentSemesterRegistration.findFirst({
+    where: {
+      student: {
+        id: studentInfo?.id,
+      },
+      semesterRegistration: {
+        id: semesterRegistrationInfo?.id,
+      },
+    },
+  });
+
+  if (!studentRegistration) {
+    studentRegistration = await prisma.studentSemesterRegistration.create({
+      data: {
+        student: {
+          connect: {
+            id: studentInfo?.id,
+          },
+        },
+        semesterRegistration: {
+          connect: {
+            id: semesterRegistrationInfo?.id,
+          },
+        },
+      },
+    });
+  }
+
+  return {
+    semesterRegistration: semesterRegistrationInfo,
+    studentSemesterRegistration: studentRegistration,
+  };
+};
+
 export const semesterRegistrationService = {
   create,
   getSemesterRegistrations,
   getSingleSemesterRegistration,
   update,
   deleteSemesterRegistration,
+  startStudentRegistration,
 };

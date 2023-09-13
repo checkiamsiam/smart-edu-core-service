@@ -28,4 +28,6 @@ semesterRegistrationRoutes.put(
 
 semesterRegistrationRoutes.delete("/delete/:id", authorization(userRoleEnum.admin), semesterRegistrationController.deleteSemesterRegistration);
 
+semesterRegistrationRoutes.post("/start-registration", authorization(userRoleEnum.student), semesterRegistrationController.startStudentRegistration);
+
 export default semesterRegistrationRoutes;
