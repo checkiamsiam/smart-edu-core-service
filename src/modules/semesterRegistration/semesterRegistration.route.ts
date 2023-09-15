@@ -30,4 +30,25 @@ semesterRegistrationRoutes.delete("/delete/:id", authorization(userRoleEnum.admi
 
 semesterRegistrationRoutes.post("/start-registration", authorization(userRoleEnum.student), semesterRegistrationController.startStudentRegistration);
 
+semesterRegistrationRoutes.get("/get-my-registration", authorization(userRoleEnum.student), semesterRegistrationController.getMyRegistration);
+
+semesterRegistrationRoutes.post(
+  "/enroll-into-course",
+  validateRequest(semesterRegistrationValidation.enrollOrWithdrawCourse),
+  authorization(userRoleEnum.student),
+  semesterRegistrationController.enrollIntoCourse
+);
+
+semesterRegistrationRoutes.post(
+  "/withdraw-from-course",
+  validateRequest(semesterRegistrationValidation.enrollOrWithdrawCourse),
+  authorization(userRoleEnum.student),
+  semesterRegistrationController.withdrawFromCourse
+);
+semesterRegistrationRoutes.post(
+  "/confirm-my-registration",
+  authorization(userRoleEnum.student),
+  semesterRegistrationController.confirmMyRegistration
+);
+
 export default semesterRegistrationRoutes;
