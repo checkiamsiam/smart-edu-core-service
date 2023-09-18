@@ -51,4 +51,10 @@ semesterRegistrationRoutes.post(
   semesterRegistrationController.confirmMyRegistration
 );
 
+semesterRegistrationRoutes.post(
+  '/start-new-semester/:id',
+  authorization(userRoleEnum.student),
+  semesterRegistrationController.startNewSemester
+)
+
 export default semesterRegistrationRoutes;
