@@ -131,7 +131,12 @@ const getStudentEnrolledCourseMarks = async (queryFeatures: IQueryFeatures): Pro
   };
 };
 
+const updateStudentMarks = async (payload: any) => {
+  console.log(payload);
+};
+
 export const studentEnrolledCourseMarkService = {
   createStudentEnrolledCourseDefaultMark,
   getStudentEnrolledCourseMarks,
+  updateStudentMarks,
 };
