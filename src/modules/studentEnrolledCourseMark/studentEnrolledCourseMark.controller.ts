@@ -29,7 +29,33 @@ const updateStudentMarks = catchAsyncErrors(async (req: Request, res: Response) 
   });
 });
 
+const updateFinalMarks = catchAsyncErrors(async (req: Request, res: Response) => {
+  const result = await studentEnrolledCourseMarkService.updateFinalMarks(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Final marks updated!",
+    data: result,
+  });
+});
+
+const getMyCourseMarks = catchAsyncErrors(async (req: Request, res: Response) => {
+  const result = await studentEnrolledCourseMarkService.getMyCourseMarks(req.queryFeatures, req.user);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    data: result.data,
+    meta: {
+      page: req.queryFeatures.page,
+      limit: req.queryFeatures.limit,
+      total: result.total || 0,
+    },
+  });
+});
+
 export const studentEnrolledCourseMarkController = {
   getStudentEnrolledCourseMarks,
   updateStudentMarks,
+  updateFinalMarks,
+  getMyCourseMarks,
 };
