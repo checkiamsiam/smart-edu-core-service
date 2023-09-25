@@ -75,11 +75,23 @@ const deleteStudent: RequestHandler = catchAsyncErrors(async (req: Request, res:
   });
 });
 
+const myCourses = catchAsyncErrors(async (req: Request, res: Response) => {
+  const user = req.user;
+  const result = await studentService.myCourses(user.userId, req.queryFeatures.filter);
+  sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Student Courses data fetched successfully',
+      data: result
+  });
+});
+
 const studentControllers = {
   createStudent,
   getStudents,
   getSingleStudent,
   updateStudent,
   deleteStudent,
+  myCourses
 };
 export default studentControllers;

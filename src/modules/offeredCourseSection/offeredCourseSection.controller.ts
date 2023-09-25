@@ -5,13 +5,18 @@ import AppError from "../../utils/customError.util";
 import sendResponse from "../../utils/sendResponse.util";
 
 import { OfferedCourseSection } from "@prisma/client";
-import { ICreateOfferedCourseSection } from "./offeredCourseSection.interface";
+import { IOfferedCourseSectionCreate } from "./offeredCourseSection.interface";
 import offeredCourseSectionService from "./offeredCourseSection.service";
 
 const createOfferedCourseSection: RequestHandler = catchAsyncErrors(async (req: Request, res: Response) => {
-  const body: ICreateOfferedCourseSection = req.body;
+  const body: IOfferedCourseSectionCreate = req.body;
 
   const result = await offeredCourseSectionService.create(body);
+
+  if (!result) {
+    throw new AppError("offered course section Not Created", httpStatus.BAD_REQUEST);
+  }
+
   sendResponse<OfferedCourseSection>(res, {
     statusCode: httpStatus.OK,
     success: true,

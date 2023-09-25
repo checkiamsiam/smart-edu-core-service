@@ -17,6 +17,14 @@ facultyRoute.post(
 
 facultyRoute.get("/", queryFeatures("multiple"), facultyControllers.getFaculties);
 
+facultyRoute.get("/my-courses", authorization(userRoleEnum.faculty), facultyControllers.myCourses);
+
+facultyRoute.get(
+  '/my-course-students',
+  authorization(userRoleEnum.faculty),
+  facultyControllers.getMyCourseStudents
+);
+
 facultyRoute.get("/:id", queryFeatures("single"), facultyControllers.getSingleFaculty);
 
 facultyRoute.put(

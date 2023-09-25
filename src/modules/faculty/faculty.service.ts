@@ -1,7 +1,9 @@
-import { CourseFaculty, Faculty, Prisma } from "@prisma/client";
+import { CourseFaculty, Faculty, Prisma, Student } from "@prisma/client";
+import { JwtPayload } from "jsonwebtoken";
 import prismaHelper from "../../helpers/prisma.helper";
 import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
+import { IFacultyMyCourseStudentsRequest } from "./faculty.interface";
 
 const create = async (payload: Faculty): Promise<Faculty> => {
   const newFaculty = await prisma.faculty.create({
@@ -126,6 +128,154 @@ const removeCourses = async (id: string, payload: string[]): Promise<CourseFacul
   return assignCoursesData;
 };
 
+const myCourses = async (
+  authUser: JwtPayload,
+  filter: {
+    academicSemesterId?: string | null | undefined;
+    courseId?: string | null | undefined;
+  }
+) => {
+  if (!filter.academicSemesterId) {
+    const currentSemester = await prisma.academicSemester.findFirst({
+      where: {
+        isCurrent: true,
+      },
+    });
+
+    filter.academicSemesterId = currentSemester?.id;
+  }
+
+  const offeredCourseSections = await prisma.offeredCourseSection.findMany({
+    where: {
+      OfferedCourseClassSchedule: {
+        some: {
+          faculty: {
+            facultyId: authUser.userId,
+          },
+        },
+      },
+      offeredCourse: {
+        semesterRegistration: {
+          academicSemester: {
+            id: filter.academicSemesterId,
+          },
+        },
+      },
+    },
+    include: {
+      offeredCourse: {
+        include: {
+          course: true,
+        },
+      },
+      OfferedCourseClassSchedule: {
+        include: {
+          room: {
+            include: {
+              building: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const couseAndSchedule = offeredCourseSections.reduce((acc: any, obj: any) => {
+    const course = obj.offeredCourse.course;
+    const classSchedules = obj.offeredCourseClassSchedules;
+
+    const existingCourse = acc.find((item: any) => item.couse?.id === course?.id);
+    if (existingCourse) {
+      existingCourse.sections.push({
+        section: obj,
+        classSchedules,
+      });
+    } else {
+      acc.push({
+        course,
+        sections: [
+          {
+            section: obj,
+            classSchedules,
+          },
+        ],
+      });
+    }
+    return acc;
+  }, []);
+  return couseAndSchedule;
+};
+
+const getMyCourseStudents = async (
+  filters: IFacultyMyCourseStudentsRequest,
+  options: Omit<IQueryFeatures, "filter">,
+  authUser: JwtPayload
+): Promise<IQueryResult<Student>> => {
+  const { page, limit, skip } = options;
+  if (!filters.academicSemesterId) {
+    const currentAcademicSemester = await prisma.academicSemester.findFirst({
+      where: {
+        isCurrent: true,
+      },
+    });
+
+    if (currentAcademicSemester) {
+      filters.academicSemesterId = currentAcademicSemester.id;
+    }
+  }
+
+  const offeredCourseSections = await prisma.studentSemesterRegistrationCourse.findMany({
+    where: {
+      offeredCourse: {
+        course: {
+          id: filters.courseId,
+        },
+      },
+      offeredCourseSection: {
+        offeredCourse: {
+          semesterRegistration: {
+            academicSemester: {
+              id: filters.academicSemesterId,
+            },
+          },
+        },
+        id: filters.offeredCourseSectionId,
+      },
+    },
+    include: {
+      student: true,
+    },
+    take: limit,
+    skip,
+  });
+
+  const students = offeredCourseSections.map((offeredCourseSection) => offeredCourseSection.student);
+
+  const total = await prisma.studentSemesterRegistrationCourse.count({
+    where: {
+      offeredCourse: {
+        course: {
+          id: filters.courseId,
+        },
+      },
+      offeredCourseSection: {
+        offeredCourse: {
+          semesterRegistration: {
+            academicSemester: {
+              id: filters.academicSemesterId,
+            },
+          },
+        },
+        id: filters.offeredCourseSectionId,
+      },
+    },
+  });
+  return {
+    data: students,
+    total,
+  };
+};
+
 const facultyService = {
   create,
   getFaculties,
@@ -134,6 +284,8 @@ const facultyService = {
   deleteFaculty,
   assignCourses,
   removeCourses,
+  myCourses,
+  getMyCourseStudents,
 };
 
 export default facultyService;

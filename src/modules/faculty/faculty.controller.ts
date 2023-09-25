@@ -1,4 +1,4 @@
-import { Faculty } from "@prisma/client";
+import { Faculty, Student } from "@prisma/client";
 import { Request, RequestHandler, Response } from "express";
 import httpStatus from "http-status";
 import catchAsyncErrors from "../../utils/catchAsyncError.util";
@@ -43,22 +43,19 @@ const getSingleFaculty: RequestHandler = catchAsyncErrors(async (req: Request, r
 });
 
 const updateFaculty: RequestHandler = catchAsyncErrors(async (req: Request, res: Response) => {
-  
-    const id: string = req.params.id;
-    const updatePayload: Partial<Faculty> = req.body;
-    const result: Partial<Faculty> | null =
-      await facultyService.updateFaculty(id, updatePayload);
+  const id: string = req.params.id;
+  const updatePayload: Partial<Faculty> = req.body;
+  const result: Partial<Faculty> | null = await facultyService.updateFaculty(id, updatePayload);
 
-    if (!result) {
-      throw new AppError("Requested Document Not Found", httpStatus.NOT_FOUND);
-    }
-    sendResponse<Partial<Faculty>>(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Document Updated Successfully",
-      data: result,
-    });
-  
+  if (!result) {
+    throw new AppError("Requested Document Not Found", httpStatus.NOT_FOUND);
+  }
+  sendResponse<Partial<Faculty>>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Document Updated Successfully",
+    data: result,
+  });
 });
 const deleteFaculty: RequestHandler = catchAsyncErrors(async (req: Request, res: Response) => {
   const id: string = req.params.id;
@@ -75,28 +72,54 @@ const deleteFaculty: RequestHandler = catchAsyncErrors(async (req: Request, res:
   });
 });
 
-
 const assignCourses = catchAsyncErrors(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await facultyService.assignCourses(id, req.body.courses);
   sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Course faculty assigned successfully',
-      data: result
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Course faculty assigned successfully",
+    data: result,
   });
-})
+});
 
 const removeCourses = catchAsyncErrors(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await facultyService.removeCourses(id, req.body.courses);
   sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Course faculty deleted successfully',
-      data: result
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Course faculty deleted successfully",
+    data: result,
   });
-})
+});
+
+const myCourses = catchAsyncErrors(async (req: Request, res: Response) => {
+  const user = req.user;
+  const result = await facultyService.myCourses(user, req.queryFeatures.filter);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My courses data fetched successfully!",
+    data: result,
+  });
+});
+
+const getMyCourseStudents = catchAsyncErrors(async (req: Request, res: Response) => {
+  const user = req.user;
+  const { filters, ...restOptions } = req.queryFeatures;
+  const result = await facultyService.getMyCourseStudents(filters, restOptions, user);
+  sendResponse<Partial<Student>[]>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    data: result.data,
+    meta: {
+      page: req.queryFeatures.page,
+      limit: req.queryFeatures.limit,
+      total: result.total || 0,
+    },
+  });
+});
 
 const facultyControllers = {
   createFaculty,
@@ -105,6 +128,8 @@ const facultyControllers = {
   updateFaculty,
   deleteFaculty,
   assignCourses,
-  removeCourses
+  removeCourses,
+  myCourses,
+  getMyCourseStudents,
 };
 export default facultyControllers;

@@ -2,9 +2,6 @@ import { OfferedCourseClassSchedule, WeekDays } from "@prisma/client";
 import httpStatus from "http-status";
 import prisma from "../../shared/prismaClient";
 import AppError from "../../utils/customError.util";
-// import ApiError from "../../../errors/ApiError"
-// import prisma from "../../../shared/prisma"
-// import { hasTimeConflict } from "../../../shared/utils"
 
 const hasTimeConflict = (
   existingSlots: {
