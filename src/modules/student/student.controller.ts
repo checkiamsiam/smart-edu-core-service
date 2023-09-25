@@ -43,22 +43,19 @@ const getSingleStudent: RequestHandler = catchAsyncErrors(async (req: Request, r
 });
 
 const updateStudent: RequestHandler = catchAsyncErrors(async (req: Request, res: Response) => {
-  
-    const id: string = req.params.id;
-    const updatePayload: Partial<Student> = req.body;
-    const result: Partial<Student> | null =
-      await studentService.updateStudent(id, updatePayload);
+  const id: string = req.params.id;
+  const updatePayload: Partial<Student> = req.body;
+  const result: Partial<Student> | null = await studentService.updateStudent(id, updatePayload);
 
-    if (!result) {
-      throw new AppError("Requrested Document Not Found", httpStatus.NOT_FOUND);
-    }
-    sendResponse<Partial<Student>>(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Document Updated Successfully",
-      data: result,
-    });
-  
+  if (!result) {
+    throw new AppError("Requrested Document Not Found", httpStatus.NOT_FOUND);
+  }
+  sendResponse<Partial<Student>>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Document Updated Successfully",
+    data: result,
+  });
 });
 const deleteStudent: RequestHandler = catchAsyncErrors(async (req: Request, res: Response) => {
   const id: string = req.params.id;
@@ -77,12 +74,12 @@ const deleteStudent: RequestHandler = catchAsyncErrors(async (req: Request, res:
 
 const myCourses = catchAsyncErrors(async (req: Request, res: Response) => {
   const user = req.user;
-  const result = await studentService.myCourses(user.userId, req.queryFeatures.filter);
+  const result = await studentService.myCourses(user.userId, req.queryFeatures.filters);
   sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Student Courses data fetched successfully',
-      data: result
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Student Courses data fetched successfully",
+    data: result,
   });
 });
 
@@ -92,6 +89,6 @@ const studentControllers = {
   getSingleStudent,
   updateStudent,
   deleteStudent,
-  myCourses
+  myCourses,
 };
 export default studentControllers;

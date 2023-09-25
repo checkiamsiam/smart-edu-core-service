@@ -208,8 +208,7 @@ const myCourses = async (
 
 const getMyCourseStudents = async (
   filters: IFacultyMyCourseStudentsRequest,
-  options: Omit<IQueryFeatures, "filter">,
-  authUser: JwtPayload
+  options: Omit<IQueryFeatures, "filter">
 ): Promise<IQueryResult<Student>> => {
   const { page, limit, skip } = options;
   if (!filters.academicSemesterId) {

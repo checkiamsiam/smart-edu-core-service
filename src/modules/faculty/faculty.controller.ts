@@ -96,7 +96,7 @@ const removeCourses = catchAsyncErrors(async (req: Request, res: Response) => {
 
 const myCourses = catchAsyncErrors(async (req: Request, res: Response) => {
   const user = req.user;
-  const result = await facultyService.myCourses(user, req.queryFeatures.filter);
+  const result = await facultyService.myCourses(user, req.queryFeatures.filters);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
