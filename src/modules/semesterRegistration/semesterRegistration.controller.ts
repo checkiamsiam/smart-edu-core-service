@@ -143,16 +143,16 @@ const startNewSemester = catchAsyncErrors(async (req: Request, res: Response) =>
 })
 
 
-// const getMySemesterRegCouses = catchAsync(async (req: Request, res: Response) => {
-//   const user = (req as any).user;
-//   const result = await semesterRegistrationService.getMySemesterRegCouses(user.userId)
-//   sendResponse(res, {
-//       statusCode: httpStatus.OK,
-//       success: true,
-//       message: 'My registration courses data fatched!',
-//       data: result
-//   });
-// })
+const getMySemesterRegCourses = catchAsyncErrors(async (req: Request, res: Response) => {
+  const user = req.user
+  const result = await semesterRegistrationService.getMySemesterRegCourses(user.userId)
+  sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'My registration courses data fatched!',
+      data: result
+  });
+})
 
 const semesterRegistrationController = {
   createSemesterRegistration,
@@ -165,7 +165,8 @@ const semesterRegistrationController = {
   withdrawFromCourse,
   confirmMyRegistration,
   getMyRegistration,
-  startNewSemester
+  startNewSemester,
+  getMySemesterRegCourses
 
 };
 export default semesterRegistrationController;

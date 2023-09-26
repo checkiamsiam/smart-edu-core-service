@@ -17,6 +17,12 @@ semesterRegistrationRoutes.post(
 
 semesterRegistrationRoutes.get("/", queryFeatures("multiple"), semesterRegistrationController.getSemesterRegistrations);
 
+semesterRegistrationRoutes.get(
+  '/get-my-semester-courses',
+  authorization(userRoleEnum.student),
+  semesterRegistrationController.getMySemesterRegCourses
+);
+
 semesterRegistrationRoutes.get("/:id", queryFeatures("single"), semesterRegistrationController.getSingleSemesterRegistration);
 
 semesterRegistrationRoutes.put(
