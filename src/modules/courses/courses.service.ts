@@ -142,7 +142,7 @@ const updateCourse = async (id: string, payload: Partial<ICourse>): Promise<Part
 
       const newPrerequisite = preRequisiteCourses.filter((coursePrerequisite) => coursePrerequisite.courseId && !coursePrerequisite.isRemove);
 
-      console.log(deletePrerequisite);
+  
 
       deletePrerequisite.forEach(async (deletePreCourse) => {
         await transactionClient.courseToPrerequisite.deleteMany({

@@ -106,9 +106,8 @@ const myCourses = catchAsyncErrors(async (req: Request, res: Response) => {
 });
 
 const getMyCourseStudents = catchAsyncErrors(async (req: Request, res: Response) => {
-  const user = req.user;
   const { filters, ...restOptions } = req.queryFeatures;
-  const result = await facultyService.getMyCourseStudents(filters, restOptions, user);
+  const result = await facultyService.getMyCourseStudents(filters, restOptions);
   sendResponse<Partial<Student>[]>(res, {
     statusCode: httpStatus.OK,
     success: true,

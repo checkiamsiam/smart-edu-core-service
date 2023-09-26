@@ -20,7 +20,6 @@ const createStudentEnrolledCourseDefaultMark = async (
     academicSemesterId: string;
   }
 ) => {
-  console.log("object");
   const isExitMidtermData = await prismaClient.studentEnrolledCourseMark.findFirst({
     where: {
       examType: ExamType.MIDTERM,

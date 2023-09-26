@@ -19,6 +19,9 @@ studentRoute.get("/", queryFeatures("multiple"), studentControllers.getStudents)
 
 studentRoute.get("/my-courses", queryFeatures("multiple"), authorization(userRoleEnum.student), studentControllers.myCourses);
 
+studentRoute.get("/my-course-schedules", authorization(userRoleEnum.student), queryFeatures("multiple"), studentControllers.getMyCourseSchedules);
+studentRoute.get("/my-academic-info", authorization(userRoleEnum.student), studentControllers.myAcademicInfo);
+
 studentRoute.get("/:id", queryFeatures("single"), studentControllers.getSingleStudent);
 
 studentRoute.put(

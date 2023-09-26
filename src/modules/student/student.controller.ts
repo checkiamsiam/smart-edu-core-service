@@ -83,6 +83,28 @@ const myCourses = catchAsyncErrors(async (req: Request, res: Response) => {
   });
 });
 
+const getMyCourseSchedules = catchAsyncErrors(async (req: Request, res: Response) => {
+  const user = req.user;
+  const result = await studentService.getMyCourseSchedules(user.userId, req.queryFeatures.filters);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Course Schedules data fetched successfully",
+    data: result,
+  });
+});
+
+const myAcademicInfo = catchAsyncErrors(async (req: Request, res: Response) => {
+  const user = req.user;
+  const result = await studentService.getMyAcademicInfo(user.userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My Academic Info data fetched successfully",
+    data: result,
+  });
+});
+
 const studentControllers = {
   createStudent,
   getStudents,
@@ -90,5 +112,7 @@ const studentControllers = {
   updateStudent,
   deleteStudent,
   myCourses,
+  getMyCourseSchedules,
+  myAcademicInfo,
 };
 export default studentControllers;

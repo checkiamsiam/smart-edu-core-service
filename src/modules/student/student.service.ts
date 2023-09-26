@@ -1,7 +1,8 @@
-import { Prisma, Student } from "@prisma/client";
+import { Prisma, Student, StudentEnrolledCourseStatus } from "@prisma/client";
 import prismaHelper from "../../helpers/prisma.helper";
 import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
+import { studentUtils } from "./student.utils";
 
 const create = async (payload: Student): Promise<Student> => {
   const newStudent = await prisma.student.create({
@@ -113,6 +114,100 @@ const myCourses = async (
   return result;
 };
 
+const getMyCourseSchedules = async (
+  authUserId: string,
+  filter: {
+      courseId?: string | undefined,
+      academicSemesterId?: string | undefined
+  }) => {
+  if (!filter.academicSemesterId) {
+      const currentSemester = await prisma.academicSemester.findFirst({
+          where: {
+              isCurrent: true
+          }
+      });
+      filter.academicSemesterId = currentSemester?.id;
+  }
+
+  const studentEnrolledCourses = await myCourses(authUserId, filter);
+  const studentEnrolledCourseIds = studentEnrolledCourses.map((item) => item.courseId);
+  const result = await prisma.studentSemesterRegistrationCourse.findMany({
+      where: {
+          student: {
+              studentId: authUserId
+          },
+          semesterRegistration: {
+              academicSemester: {
+                  id: filter.academicSemesterId
+              }
+          },
+          offeredCourse: {
+              course: {
+                  id: {
+                      in: studentEnrolledCourseIds
+                  }
+              }
+          }
+      },
+      include: {
+          offeredCourse: {
+              include: {
+                  course: true
+              }
+          },
+          offeredCourseSection: {
+              include: {
+                  OfferedCourseClassSchedule: {
+                      include: {
+                          room: {
+                              include: {
+                                  building: true
+                              }
+                          },
+                          faculty: true
+                      }
+
+                  }
+              }
+          }
+      }
+  });
+  return result;
+};
+
+const getMyAcademicInfo = async (authUserId: string): Promise<any> => {
+  const academicInfo = await prisma.studentAcademicInfo.findFirst({
+      where: {
+          student: {
+              studentId: authUserId
+          }
+      }
+  });
+
+  const enrolledCourses = await prisma.studentEnrolledCourse.findMany({
+      where: {
+          student: {
+              studentId: authUserId
+          },
+          status: StudentEnrolledCourseStatus.COMPLETED
+      },
+      include: {
+          course: true,
+          academicSemester: true
+      },
+      orderBy: {
+          createdAt: 'asc'
+      }
+  });
+
+  const groupByAcademicSemesterData = studentUtils.groupByAcademicSemester(enrolledCourses);
+
+  return {
+      academicInfo,
+      courses: groupByAcademicSemesterData
+  }
+}
+
 const studentService = {
   create,
   getStudents,
@@ -120,6 +215,8 @@ const studentService = {
   updateStudent,
   deleteStudent,
   myCourses,
+  getMyCourseSchedules,
+  getMyAcademicInfo,
 };
 
 export default studentService;
