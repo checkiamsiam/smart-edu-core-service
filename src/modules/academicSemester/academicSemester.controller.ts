@@ -6,7 +6,10 @@ import sendResponse from "../../utils/sendResponse.util";
 import { academicSemesterTitleCodeMapper } from "./academicSemester.constant";
 import academicSemesterService from "./academicSemester.service";
 import { AcademicSemester } from "@prisma/client";
-import { TAcademicSemesterCodes, TAcademicSemesterTitles } from "./academicSemester.interface";
+import {
+  TAcademicSemesterCodes,
+  TAcademicSemesterTitles,
+} from "./academicSemester.interface";
 
 const createAcademicSemester: RequestHandler = catchAsyncErrors(
   async (req: Request, res: Response) => {

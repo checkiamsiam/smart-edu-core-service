@@ -1,9 +1,14 @@
 import { OfferedCourse, Prisma } from "@prisma/client";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 import { ICreateOfferedCourse } from "./offeredCourse.interface";
 
-const create = async (payload: ICreateOfferedCourse): Promise<OfferedCourse[]> => {
+const create = async (
+  payload: ICreateOfferedCourse
+): Promise<OfferedCourse[]> => {
   const { academicDepartmentId, semesterRegistrationId, courseIds } = payload;
 
   await prisma.offeredCourse.createMany({
@@ -30,14 +35,19 @@ const create = async (payload: ICreateOfferedCourse): Promise<OfferedCourse[]> =
   return insertOfferedCourse;
 };
 
-const getOfferedCourse = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<OfferedCourse>> => {
+const getOfferedCourse = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<OfferedCourse>> => {
   const query: Prisma.OfferedCourseFindManyArgs = {
     skip: queryFeatures.skip,
     take: queryFeatures.limit,
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -48,7 +58,10 @@ const getOfferedCourse = async (queryFeatures: IQueryFeatures): Promise<IQueryRe
     }
   }
 
-  const [result, count] = await prisma.$transaction([prisma.offeredCourse.findMany(query), prisma.offeredCourse.count()]);
+  const [result, count] = await prisma.$transaction([
+    prisma.offeredCourse.findMany(query),
+    prisma.offeredCourse.count(),
+  ]);
 
   return {
     data: result,
@@ -56,14 +69,20 @@ const getOfferedCourse = async (queryFeatures: IQueryFeatures): Promise<IQueryRe
   };
 };
 
-const getSingleOfferedCourse = async (id: string, queryFeatures: IQueryFeatures): Promise<Partial<OfferedCourse> | null> => {
+const getSingleOfferedCourse = async (
+  id: string,
+  queryFeatures: IQueryFeatures
+): Promise<Partial<OfferedCourse> | null> => {
   const query: Prisma.OfferedCourseFindUniqueArgs = {
     where: {
       id,
     },
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -74,28 +93,34 @@ const getSingleOfferedCourse = async (id: string, queryFeatures: IQueryFeatures)
     }
   }
 
-  const result: Partial<OfferedCourse> | null = await prisma.offeredCourse.findUnique(query);
+  const result: Partial<OfferedCourse> | null =
+    await prisma.offeredCourse.findUnique(query);
 
   return result;
 };
 
-const updateOfferedCourse = async (id: string, payload: Partial<OfferedCourse>): Promise<Partial<OfferedCourse> | null> => {
-  const result: Partial<OfferedCourse> | null = await prisma.offeredCourse.update({
-    where: {
-      id,
-    },
-    data: payload,
-  });
+const updateOfferedCourse = async (
+  id: string,
+  payload: Partial<OfferedCourse>
+): Promise<Partial<OfferedCourse> | null> => {
+  const result: Partial<OfferedCourse> | null =
+    await prisma.offeredCourse.update({
+      where: {
+        id,
+      },
+      data: payload,
+    });
 
   return result;
 };
 
 const deleteOfferedCourse = async (id: string) => {
-  const result: Partial<OfferedCourse> | null = await prisma.offeredCourse.delete({
-    where: {
-      id,
-    },
-  });
+  const result: Partial<OfferedCourse> | null =
+    await prisma.offeredCourse.delete({
+      where: {
+        id,
+      },
+    });
 
   return result;
 };

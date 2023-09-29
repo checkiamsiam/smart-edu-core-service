@@ -15,15 +15,23 @@ semesterRegistrationRoutes.post(
   semesterRegistrationController.createSemesterRegistration
 );
 
-semesterRegistrationRoutes.get("/", queryFeatures("multiple"), semesterRegistrationController.getSemesterRegistrations);
+semesterRegistrationRoutes.get(
+  "/",
+  queryFeatures("multiple"),
+  semesterRegistrationController.getSemesterRegistrations
+);
 
 semesterRegistrationRoutes.get(
-  '/get-my-semester-courses',
+  "/get-my-semester-courses",
   authorization(userRoleEnum.student),
   semesterRegistrationController.getMySemesterRegCourses
 );
 
-semesterRegistrationRoutes.get("/:id", queryFeatures("single"), semesterRegistrationController.getSingleSemesterRegistration);
+semesterRegistrationRoutes.get(
+  "/:id",
+  queryFeatures("single"),
+  semesterRegistrationController.getSingleSemesterRegistration
+);
 
 semesterRegistrationRoutes.put(
   "/update/:id",
@@ -32,11 +40,23 @@ semesterRegistrationRoutes.put(
   semesterRegistrationController.updateSemesterRegistration
 );
 
-semesterRegistrationRoutes.delete("/delete/:id", authorization(userRoleEnum.admin), semesterRegistrationController.deleteSemesterRegistration);
+semesterRegistrationRoutes.delete(
+  "/delete/:id",
+  authorization(userRoleEnum.admin),
+  semesterRegistrationController.deleteSemesterRegistration
+);
 
-semesterRegistrationRoutes.post("/start-registration", authorization(userRoleEnum.student), semesterRegistrationController.startStudentRegistration);
+semesterRegistrationRoutes.post(
+  "/start-registration",
+  authorization(userRoleEnum.student),
+  semesterRegistrationController.startStudentRegistration
+);
 
-semesterRegistrationRoutes.get("/get-my-registration", authorization(userRoleEnum.student), semesterRegistrationController.getMyRegistration);
+semesterRegistrationRoutes.get(
+  "/get-my-registration",
+  authorization(userRoleEnum.student),
+  semesterRegistrationController.getMyRegistration
+);
 
 semesterRegistrationRoutes.post(
   "/enroll-into-course",
@@ -58,9 +78,9 @@ semesterRegistrationRoutes.post(
 );
 
 semesterRegistrationRoutes.post(
-  '/start-new-semester/:id',
+  "/start-new-semester/:id",
   authorization(userRoleEnum.student),
   semesterRegistrationController.startNewSemester
-)
+);
 
 export default semesterRegistrationRoutes;

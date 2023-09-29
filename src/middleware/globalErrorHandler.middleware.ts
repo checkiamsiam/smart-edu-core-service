@@ -67,16 +67,25 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     err = handelValidationErrorDB(err);
   }
 
-  if (err.name === "PrismaClientValidationError" || err.name === "PrismaClientKnownRequestError") {
+  if (
+    err.name === "PrismaClientValidationError" ||
+    err.name === "PrismaClientKnownRequestError"
+  ) {
     err = handlePrismaClientError(err);
   }
 
   if (err.name === "JsonWebTokenError") {
-    err = new AppError("Invalid token. Please log in again!", httpStatus.UNAUTHORIZED);
+    err = new AppError(
+      "Invalid token. Please log in again!",
+      httpStatus.UNAUTHORIZED
+    );
   }
 
   if (err.name === "TokenExpiredError") {
-    err = new AppError("Token expired. Please log in again!", httpStatus.UNAUTHORIZED);
+    err = new AppError(
+      "Token expired. Please log in again!",
+      httpStatus.UNAUTHORIZED
+    );
   }
 
   if (config.isDevelopment) {

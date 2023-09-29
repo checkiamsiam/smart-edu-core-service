@@ -1,7 +1,13 @@
 import { Prisma, PrismaClient, StudentSemesterPayment } from "@prisma/client";
-import { DefaultArgs, PrismaClientOptions } from "@prisma/client/runtime/library";
+import {
+  DefaultArgs,
+  PrismaClientOptions,
+} from "@prisma/client/runtime/library";
 import prismaHelper from "../../helpers/prisma.helper";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 
 const createSemesterPayment = async (
@@ -42,17 +48,20 @@ const createSemesterPayment = async (
   }
 };
 
-const getStudentSemesterPayments = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<StudentSemesterPayment>> => {
-  const whereConditions: Prisma.StudentSemesterPaymentWhereInput = prismaHelper.findManyQueryHelper<Prisma.StudentSemesterPaymentWhereInput>(
-    queryFeatures,
-    {
-      searchFields: [],
-      relationalFields: {
-        academicSemesterId: "academicSemester",
-        studentId: "student",
-      },
-    }
-  );
+const getStudentSemesterPayments = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<StudentSemesterPayment>> => {
+  const whereConditions: Prisma.StudentSemesterPaymentWhereInput =
+    prismaHelper.findManyQueryHelper<Prisma.StudentSemesterPaymentWhereInput>(
+      queryFeatures,
+      {
+        searchFields: [],
+        relationalFields: {
+          academicSemesterId: "academicSemester",
+          studentId: "student",
+        },
+      }
+    );
 
   const query: Prisma.StudentSemesterPaymentFindManyArgs = {
     where: whereConditions,
@@ -61,7 +70,10 @@ const getStudentSemesterPayments = async (queryFeatures: IQueryFeatures): Promis
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       ...queryFeatures.populate,
     };

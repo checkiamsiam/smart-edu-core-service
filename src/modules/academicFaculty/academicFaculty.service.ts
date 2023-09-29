@@ -1,6 +1,9 @@
 import { AcademicFaculty, Prisma } from "@prisma/client";
 import prismaHelper from "../../helpers/prisma.helper";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 
 const create = async (payload: AcademicFaculty): Promise<AcademicFaculty> => {
@@ -10,10 +13,16 @@ const create = async (payload: AcademicFaculty): Promise<AcademicFaculty> => {
   return newAf;
 };
 
-const getAcademicFaculties = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<AcademicFaculty>> => {
-  const whereConditions: Prisma.AcademicFacultyWhereInput = prismaHelper.findManyQueryHelper<Prisma.AcademicFacultyWhereInput>(queryFeatures, {
-    searchFields: ["title"],
-  });
+const getAcademicFaculties = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<AcademicFaculty>> => {
+  const whereConditions: Prisma.AcademicFacultyWhereInput =
+    prismaHelper.findManyQueryHelper<Prisma.AcademicFacultyWhereInput>(
+      queryFeatures,
+      {
+        searchFields: ["title"],
+      }
+    );
 
   const query: Prisma.AcademicFacultyFindManyArgs = {
     where: whereConditions,
@@ -22,7 +31,10 @@ const getAcademicFaculties = async (queryFeatures: IQueryFeatures): Promise<IQue
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -44,14 +56,20 @@ const getAcademicFaculties = async (queryFeatures: IQueryFeatures): Promise<IQue
   };
 };
 
-const getSingleAcademicFaculty = async (id: string, queryFeatures: IQueryFeatures): Promise<Partial<AcademicFaculty> | null> => {
+const getSingleAcademicFaculty = async (
+  id: string,
+  queryFeatures: IQueryFeatures
+): Promise<Partial<AcademicFaculty> | null> => {
   const query: Prisma.AcademicFacultyFindUniqueArgs = {
     where: {
       id,
     },
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -61,28 +79,34 @@ const getSingleAcademicFaculty = async (id: string, queryFeatures: IQueryFeature
       query.select = { id: true, ...queryFeatures.fields };
     }
   }
-  const result: Partial<AcademicFaculty> | null = await prisma.academicFaculty.findUnique(query);
+  const result: Partial<AcademicFaculty> | null =
+    await prisma.academicFaculty.findUnique(query);
 
   return result;
 };
 
-const updateAcademicFaculty = async (id: string, payload: Partial<AcademicFaculty>): Promise<Partial<AcademicFaculty> | null> => {
-  const result: Partial<AcademicFaculty> | null = await prisma.academicFaculty.update({
-    where: {
-      id,
-    },
-    data: payload,
-  });
+const updateAcademicFaculty = async (
+  id: string,
+  payload: Partial<AcademicFaculty>
+): Promise<Partial<AcademicFaculty> | null> => {
+  const result: Partial<AcademicFaculty> | null =
+    await prisma.academicFaculty.update({
+      where: {
+        id,
+      },
+      data: payload,
+    });
 
   return result;
 };
 
 const deleteAcademicFaculty = async (id: string) => {
-  const result: Partial<AcademicFaculty> | null = await prisma.academicFaculty.delete({
-    where: {
-      id,
-    },
-  });
+  const result: Partial<AcademicFaculty> | null =
+    await prisma.academicFaculty.delete({
+      where: {
+        id,
+      },
+    });
 
   return result;
 };

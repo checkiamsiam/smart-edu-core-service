@@ -16,7 +16,7 @@ studentEnrolledCourseMarkRoutes.get(
 );
 
 studentEnrolledCourseMarkRoutes.get(
-  '/my-marks',
+  "/my-marks",
   authorization(userRoleEnum.student),
   studentEnrolledCourseMarkController.getMyCourseMarks
 );
@@ -29,10 +29,10 @@ studentEnrolledCourseMarkRoutes.patch(
 );
 
 studentEnrolledCourseMarkRoutes.patch(
-  '/update-final-marks',
+  "/update-final-marks",
   authorization(userRoleEnum.admin, userRoleEnum.faculty),
   validateRequest(studentEnrolledCourseMarkValidation.updateStudentMarks),
   studentEnrolledCourseMarkController.updateFinalMarks
-)
+);
 
 export default studentEnrolledCourseMarkRoutes;

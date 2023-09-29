@@ -1,7 +1,10 @@
 import { Course, CourseFaculty, Prisma } from "@prisma/client";
 import httpStatus from "http-status";
 import prismaHelper from "../../helpers/prisma.helper";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 import AppError from "../../utils/customError.util";
 import { ICourse, IPrerequisiteCourseRequest } from "./course.interface";
@@ -9,48 +12,55 @@ import { ICourse, IPrerequisiteCourseRequest } from "./course.interface";
 const create = async (payload: ICourse): Promise<Course> => {
   const { preRequisiteCourses, ...data } = payload;
 
-  const newCourseIncluded: Course | null = await prisma.$transaction(async (tx) => {
-    const newCourse = await tx.course.create({
-      data,
-    });
-
-    if (!newCourse) {
-      throw new AppError("course not created", httpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-      const createManyData = preRequisiteCourses.map((el: IPrerequisiteCourseRequest) => {
-        return {
-          courseId: newCourse.id,
-          preRequisiteId: el.courseId,
-        };
+  const newCourseIncluded: Course | null = await prisma.$transaction(
+    async (tx) => {
+      const newCourse = await tx.course.create({
+        data,
       });
-      await tx.courseToPrerequisite.createMany({
-        data: createManyData,
-      });
-    }
 
-    const result = await tx.course.findUnique({
-      where: {
-        id: newCourse.id,
-      },
-      include: {
-        _count: true,
-        preRequisite: {
-          include: {
-            preRequisite: true,
+      if (!newCourse) {
+        throw new AppError(
+          "course not created",
+          httpStatus.INTERNAL_SERVER_ERROR
+        );
+      }
+
+      if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+        const createManyData = preRequisiteCourses.map(
+          (el: IPrerequisiteCourseRequest) => {
+            return {
+              courseId: newCourse.id,
+              preRequisiteId: el.courseId,
+            };
+          }
+        );
+        await tx.courseToPrerequisite.createMany({
+          data: createManyData,
+        });
+      }
+
+      const result = await tx.course.findUnique({
+        where: {
+          id: newCourse.id,
+        },
+        include: {
+          _count: true,
+          preRequisite: {
+            include: {
+              preRequisite: true,
+            },
+          },
+          preRequisiteFor: {
+            include: {
+              course: true,
+            },
           },
         },
-        preRequisiteFor: {
-          include: {
-            course: true,
-          },
-        },
-      },
-    });
+      });
 
-    return result;
-  });
+      return result;
+    }
+  );
 
   if (!newCourseIncluded) {
     throw new AppError("course not created", httpStatus.INTERNAL_SERVER_ERROR);
@@ -59,10 +69,13 @@ const create = async (payload: ICourse): Promise<Course> => {
   return newCourseIncluded;
 };
 
-const getCourses = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<Course>> => {
-  const whereConditions: Prisma.CourseWhereInput = prismaHelper.findManyQueryHelper<Prisma.CourseWhereInput>(queryFeatures, {
-    searchFields: ["title"],
-  });
+const getCourses = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<Course>> => {
+  const whereConditions: Prisma.CourseWhereInput =
+    prismaHelper.findManyQueryHelper<Prisma.CourseWhereInput>(queryFeatures, {
+      searchFields: ["title"],
+    });
 
   const query: Prisma.CourseFindManyArgs = {
     include: {
@@ -84,7 +97,10 @@ const getCourses = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<C
     orderBy: queryFeatures.sort,
   };
 
-  const [result, count] = await prisma.$transaction([prisma.course.findMany(query), prisma.course.count({ where: whereConditions })]);
+  const [result, count] = await prisma.$transaction([
+    prisma.course.findMany(query),
+    prisma.course.count({ where: whereConditions }),
+  ]);
 
   return {
     data: result,
@@ -122,7 +138,10 @@ const getSingleCourse = async (id: string): Promise<Partial<Course> | null> => {
   return result;
 };
 
-const updateCourse = async (id: string, payload: Partial<ICourse>): Promise<Partial<Course> | null> => {
+const updateCourse = async (
+  id: string,
+  payload: Partial<ICourse>
+): Promise<Partial<Course> | null> => {
   const { preRequisiteCourses, ...courseData } = payload;
 
   await prisma.$transaction(async (transactionClient) => {
@@ -138,11 +157,15 @@ const updateCourse = async (id: string, payload: Partial<ICourse>): Promise<Part
     }
 
     if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-      const deletePrerequisite = preRequisiteCourses.filter((coursePrerequisite) => coursePrerequisite.courseId && coursePrerequisite.isRemove);
+      const deletePrerequisite = preRequisiteCourses.filter(
+        (coursePrerequisite) =>
+          coursePrerequisite.courseId && coursePrerequisite.isRemove
+      );
 
-      const newPrerequisite = preRequisiteCourses.filter((coursePrerequisite) => coursePrerequisite.courseId && !coursePrerequisite.isRemove);
-
-  
+      const newPrerequisite = preRequisiteCourses.filter(
+        (coursePrerequisite) =>
+          coursePrerequisite.courseId && !coursePrerequisite.isRemove
+      );
 
       deletePrerequisite.forEach(async (deletePreCourse) => {
         await transactionClient.courseToPrerequisite.deleteMany({
@@ -159,12 +182,14 @@ const updateCourse = async (id: string, payload: Partial<ICourse>): Promise<Part
         });
       });
 
-      const createManyData = newPrerequisite.map((el: IPrerequisiteCourseRequest) => {
-        return {
-          courseId: id,
-          preRequisiteId: el.courseId,
-        };
-      });
+      const createManyData = newPrerequisite.map(
+        (el: IPrerequisiteCourseRequest) => {
+          return {
+            courseId: id,
+            preRequisiteId: el.courseId,
+          };
+        }
+      );
 
       await transactionClient.courseToPrerequisite.createMany({
         data: createManyData,
@@ -222,7 +247,10 @@ const deleteCourse = async (id: string) => {
   return result;
 };
 
-const assignFaculties = async (id: string, payload: string[]): Promise<CourseFaculty[]> => {
+const assignFaculties = async (
+  id: string,
+  payload: string[]
+): Promise<CourseFaculty[]> => {
   await prisma.courseFaculty.createMany({
     data: payload.map((facultyId) => ({
       courseId: id,
@@ -242,7 +270,10 @@ const assignFaculties = async (id: string, payload: string[]): Promise<CourseFac
   return assignFacultiesData;
 };
 
-const removeFaculties = async (id: string, payload: string[]): Promise<CourseFaculty[] | null> => {
+const removeFaculties = async (
+  id: string,
+  payload: string[]
+): Promise<CourseFaculty[] | null> => {
   await prisma.courseFaculty.deleteMany({
     where: {
       courseId: id,

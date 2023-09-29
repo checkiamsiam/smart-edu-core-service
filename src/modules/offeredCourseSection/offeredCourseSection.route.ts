@@ -15,9 +15,17 @@ offeredCourseSectionRoutes.post(
   offeredCourseSectionController.createOfferedCourseSection
 );
 
-offeredCourseSectionRoutes.get("/", queryFeatures("multiple"), offeredCourseSectionController.getOfferedCourseSections);
+offeredCourseSectionRoutes.get(
+  "/",
+  queryFeatures("multiple"),
+  offeredCourseSectionController.getOfferedCourseSections
+);
 
-offeredCourseSectionRoutes.get("/:id", queryFeatures("single"), offeredCourseSectionController.getSingleOfferedCourseSection);
+offeredCourseSectionRoutes.get(
+  "/:id",
+  queryFeatures("single"),
+  offeredCourseSectionController.getSingleOfferedCourseSection
+);
 
 offeredCourseSectionRoutes.put(
   "/update/:id",
@@ -26,6 +34,10 @@ offeredCourseSectionRoutes.put(
   offeredCourseSectionController.updateOfferedCourseSection
 );
 
-offeredCourseSectionRoutes.delete("/delete/:id", authorization(userRoleEnum.admin), offeredCourseSectionController.deleteOfferedCourseSection);
+offeredCourseSectionRoutes.delete(
+  "/delete/:id",
+  authorization(userRoleEnum.admin),
+  offeredCourseSectionController.deleteOfferedCourseSection
+);
 
 export default offeredCourseSectionRoutes;

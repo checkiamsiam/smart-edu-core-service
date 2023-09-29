@@ -15,9 +15,17 @@ studentEnrolledCourseRoutes.post(
   studentEnrolledCourseController.createStudentEnrolledCourse
 );
 
-studentEnrolledCourseRoutes.get("/", queryFeatures("multiple"), studentEnrolledCourseController.getStudentEnrolledCourses);
+studentEnrolledCourseRoutes.get(
+  "/",
+  queryFeatures("multiple"),
+  studentEnrolledCourseController.getStudentEnrolledCourses
+);
 
-studentEnrolledCourseRoutes.get("/:id", queryFeatures("single"), studentEnrolledCourseController.getSingleStudentEnrolledCourse);
+studentEnrolledCourseRoutes.get(
+  "/:id",
+  queryFeatures("single"),
+  studentEnrolledCourseController.getSingleStudentEnrolledCourse
+);
 
 studentEnrolledCourseRoutes.put(
   "/update/:id",

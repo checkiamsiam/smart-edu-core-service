@@ -15,13 +15,31 @@ facultyRoute.post(
   facultyControllers.createFaculty
 );
 
-facultyRoute.get("/", queryFeatures("multiple"), facultyControllers.getFaculties);
+facultyRoute.get(
+  "/",
+  queryFeatures("multiple"),
+  facultyControllers.getFaculties
+);
 
-facultyRoute.get("/my-courses", authorization(userRoleEnum.faculty), queryFeatures("multiple"), facultyControllers.myCourses);
+facultyRoute.get(
+  "/my-courses",
+  authorization(userRoleEnum.faculty),
+  queryFeatures("multiple"),
+  facultyControllers.myCourses
+);
 
-facultyRoute.get("/my-course-students", authorization(userRoleEnum.faculty), queryFeatures("multiple"), facultyControllers.getMyCourseStudents);
+facultyRoute.get(
+  "/my-course-students",
+  authorization(userRoleEnum.faculty),
+  queryFeatures("multiple"),
+  facultyControllers.getMyCourseStudents
+);
 
-facultyRoute.get("/:id", queryFeatures("single"), facultyControllers.getSingleFaculty);
+facultyRoute.get(
+  "/:id",
+  queryFeatures("single"),
+  facultyControllers.getSingleFaculty
+);
 
 facultyRoute.put(
   "/update/:id",
@@ -30,7 +48,11 @@ facultyRoute.put(
   facultyControllers.updateFaculty
 );
 
-facultyRoute.delete("/delete/:id", authorization(userRoleEnum.admin), facultyControllers.deleteFaculty);
+facultyRoute.delete(
+  "/delete/:id",
+  authorization(userRoleEnum.admin),
+  facultyControllers.deleteFaculty
+);
 
 facultyRoute.post(
   "/:id/assign-courses",

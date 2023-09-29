@@ -8,14 +8,28 @@ import { roomValidation } from "./room.validation";
 
 const roomRoutes: Router = express.Router();
 
-roomRoutes.post("/create", authorization(userRoleEnum.admin), validateRequest(roomValidation.createRoomReq), roomController.createRoom);
+roomRoutes.post(
+  "/create",
+  authorization(userRoleEnum.admin),
+  validateRequest(roomValidation.createRoomReq),
+  roomController.createRoom
+);
 
 roomRoutes.get("/", queryFeatures("multiple"), roomController.getRooms);
 
 roomRoutes.get("/:id", queryFeatures("single"), roomController.getSingleRoom);
 
-roomRoutes.put("/update/:id", authorization(userRoleEnum.admin), validateRequest(roomValidation.updateRoomReq), roomController.updateRoom);
+roomRoutes.put(
+  "/update/:id",
+  authorization(userRoleEnum.admin),
+  validateRequest(roomValidation.updateRoomReq),
+  roomController.updateRoom
+);
 
-roomRoutes.delete("/delete/:id", authorization(userRoleEnum.admin), roomController.deleteRoom);
+roomRoutes.delete(
+  "/delete/:id",
+  authorization(userRoleEnum.admin),
+  roomController.deleteRoom
+);
 
 export default roomRoutes;

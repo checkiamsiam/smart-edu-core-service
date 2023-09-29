@@ -6,10 +6,10 @@ export type IUpdateStudentMarksPayload = {
   courseId: string;
   examType: ExamType;
   marks: number;
-}
+};
 
 export type IUpdateStudentCourseFinalMarksPayload = {
   academicSemesterId: string;
   studentId: string;
   courseId: string;
-}
+};

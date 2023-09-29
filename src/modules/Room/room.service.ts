@@ -1,6 +1,9 @@
 import { Room, Prisma } from "@prisma/client";
 import prismaHelper from "../../helpers/prisma.helper";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 
 const create = async (payload: Room): Promise<Room> => {
@@ -10,13 +13,16 @@ const create = async (payload: Room): Promise<Room> => {
   return newr;
 };
 
-const getRooms = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<Room>> => {
-  const whereConditions: Prisma.RoomWhereInput = prismaHelper.findManyQueryHelper<Prisma.RoomWhereInput>(queryFeatures, {
-    searchFields: ['roomNumber', 'floor'],
-    relationalFields: {
-      buildingId: "building"
-    }
-  });
+const getRooms = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<Room>> => {
+  const whereConditions: Prisma.RoomWhereInput =
+    prismaHelper.findManyQueryHelper<Prisma.RoomWhereInput>(queryFeatures, {
+      searchFields: ["roomNumber", "floor"],
+      relationalFields: {
+        buildingId: "building",
+      },
+    });
 
   const query: Prisma.RoomFindManyArgs = {
     where: whereConditions,
@@ -25,7 +31,10 @@ const getRooms = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<Roo
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       ...queryFeatures.populate,
     };
@@ -34,7 +43,10 @@ const getRooms = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<Roo
       query.select = { id: true, ...queryFeatures.fields };
     }
   }
-  const [result, count] = await prisma.$transaction([prisma.room.findMany(query), prisma.room.count({ where: whereConditions })]);
+  const [result, count] = await prisma.$transaction([
+    prisma.room.findMany(query),
+    prisma.room.count({ where: whereConditions }),
+  ]);
 
   return {
     data: result,
@@ -42,14 +54,20 @@ const getRooms = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<Roo
   };
 };
 
-const getSingleRoom = async (id: string, queryFeatures: IQueryFeatures): Promise<Partial<Room> | null> => {
+const getSingleRoom = async (
+  id: string,
+  queryFeatures: IQueryFeatures
+): Promise<Partial<Room> | null> => {
   const query: Prisma.RoomFindUniqueArgs = {
     where: {
       id,
     },
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       ...queryFeatures.populate,
     };
@@ -64,7 +82,10 @@ const getSingleRoom = async (id: string, queryFeatures: IQueryFeatures): Promise
   return result;
 };
 
-const updateRoom = async (id: string, payload: Partial<Room>): Promise<Partial<Room> | null> => {
+const updateRoom = async (
+  id: string,
+  payload: Partial<Room>
+): Promise<Partial<Room> | null> => {
   const result: Partial<Room> | null = await prisma.room.update({
     where: {
       id,

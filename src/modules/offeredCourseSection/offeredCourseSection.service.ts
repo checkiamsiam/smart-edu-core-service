@@ -1,13 +1,21 @@
 import { OfferedCourseSection, Prisma } from "@prisma/client";
 import httpStatus from "http-status";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 import { asyncForEach } from "../../utils/asyncForeach.util";
 import AppError from "../../utils/customError.util";
 import { offeredCourseClassScheduleUtils } from "../offeredCourseSchedule/offeredCourseSchedule.utils";
-import { IClassSchedule, IOfferedCourseSectionCreate } from "./offeredCourseSection.interface";
+import {
+  IClassSchedule,
+  IOfferedCourseSectionCreate,
+} from "./offeredCourseSection.interface";
 
-const create = async (payload: IOfferedCourseSectionCreate): Promise<OfferedCourseSection | null> => {
+const create = async (
+  payload: IOfferedCourseSectionCreate
+): Promise<OfferedCourseSection | null> => {
   const { classSchedules, ...data } = payload;
 
   const isExistOfferedCourse = await prisma.offeredCourse.findFirst({
@@ -17,7 +25,10 @@ const create = async (payload: IOfferedCourseSectionCreate): Promise<OfferedCour
   });
 
   if (!isExistOfferedCourse) {
-    throw new AppError("Offered Course does not exist!", httpStatus.BAD_REQUEST);
+    throw new AppError(
+      "Offered Course does not exist!",
+      httpStatus.BAD_REQUEST
+    );
   }
 
   await asyncForEach(classSchedules, async (schedule: any) => {
@@ -39,14 +50,15 @@ const create = async (payload: IOfferedCourseSectionCreate): Promise<OfferedCour
   }
 
   const createSection = await prisma.$transaction(async (transactionClient) => {
-    const createOfferedCourseSection = await transactionClient.offeredCourseSection.create({
-      data: {
-        title: data.title,
-        maxCapacity: data.maxCapacity,
-        offeredCourseId: data.offeredCourseId,
-        semesterRegistrationId: isExistOfferedCourse.semesterRegistrationId,
-      },
-    });
+    const createOfferedCourseSection =
+      await transactionClient.offeredCourseSection.create({
+        data: {
+          title: data.title,
+          maxCapacity: data.maxCapacity,
+          offeredCourseId: data.offeredCourseId,
+          semesterRegistrationId: isExistOfferedCourse.semesterRegistrationId,
+        },
+      });
 
     const scheduleData = classSchedules.map((schedule: IClassSchedule) => ({
       startTime: schedule.startTime,
@@ -91,14 +103,19 @@ const create = async (payload: IOfferedCourseSectionCreate): Promise<OfferedCour
   return result;
 };
 
-const getOfferedCourseSection = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<OfferedCourseSection>> => {
+const getOfferedCourseSection = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<OfferedCourseSection>> => {
   const query: Prisma.OfferedCourseSectionFindManyArgs = {
     skip: queryFeatures.skip,
     take: queryFeatures.limit,
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       ...queryFeatures.populate,
     };
@@ -108,7 +125,10 @@ const getOfferedCourseSection = async (queryFeatures: IQueryFeatures): Promise<I
     }
   }
 
-  const [result, count] = await prisma.$transaction([prisma.offeredCourseSection.findMany(query), prisma.offeredCourseSection.count()]);
+  const [result, count] = await prisma.$transaction([
+    prisma.offeredCourseSection.findMany(query),
+    prisma.offeredCourseSection.count(),
+  ]);
 
   return {
     data: result,
@@ -116,14 +136,20 @@ const getOfferedCourseSection = async (queryFeatures: IQueryFeatures): Promise<I
   };
 };
 
-const getSingleOfferedCourseSection = async (id: string, queryFeatures: IQueryFeatures): Promise<Partial<OfferedCourseSection> | null> => {
+const getSingleOfferedCourseSection = async (
+  id: string,
+  queryFeatures: IQueryFeatures
+): Promise<Partial<OfferedCourseSection> | null> => {
   const query: Prisma.OfferedCourseSectionFindUniqueArgs = {
     where: {
       id,
     },
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       ...queryFeatures.populate,
     };
@@ -133,28 +159,34 @@ const getSingleOfferedCourseSection = async (id: string, queryFeatures: IQueryFe
     }
   }
 
-  const result: Partial<OfferedCourseSection> | null = await prisma.offeredCourseSection.findUnique(query);
+  const result: Partial<OfferedCourseSection> | null =
+    await prisma.offeredCourseSection.findUnique(query);
 
   return result;
 };
 
-const updateOfferedCourseSection = async (id: string, payload: Partial<OfferedCourseSection>): Promise<Partial<OfferedCourseSection> | null> => {
-  const result: Partial<OfferedCourseSection> | null = await prisma.offeredCourseSection.update({
-    where: {
-      id,
-    },
-    data: payload,
-  });
+const updateOfferedCourseSection = async (
+  id: string,
+  payload: Partial<OfferedCourseSection>
+): Promise<Partial<OfferedCourseSection> | null> => {
+  const result: Partial<OfferedCourseSection> | null =
+    await prisma.offeredCourseSection.update({
+      where: {
+        id,
+      },
+      data: payload,
+    });
 
   return result;
 };
 
 const deleteOfferedCourseSection = async (id: string) => {
-  const result: Partial<OfferedCourseSection> | null = await prisma.offeredCourseSection.delete({
-    where: {
-      id,
-    },
-  });
+  const result: Partial<OfferedCourseSection> | null =
+    await prisma.offeredCourseSection.delete({
+      where: {
+        id,
+      },
+    });
 
   return result;
 };

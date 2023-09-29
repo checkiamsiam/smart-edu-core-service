@@ -1,7 +1,9 @@
 import { RequestHandler } from "express";
 import { IQueryFeatures } from "../interfaces/queryFeatures.interface";
 
-const queryFeatures = (documentNumber: "single" | "multiple"): RequestHandler => {
+const queryFeatures = (
+  documentNumber: "single" | "multiple"
+): RequestHandler => {
   return (req, res, next) => {
     // set fileds that wanted
     const fieldsObj: { [key: string]: boolean } = {};
@@ -42,10 +44,11 @@ const queryFeatures = (documentNumber: "single" | "multiple"): RequestHandler =>
       const page: number = parseInt(req.query.page as string) || 1;
       const limit: number = parseInt(req.query.limit as string) || 5;
       const skip: number = (page - 1) * limit;
-      const searchKey: string = req.query.searchKey ? String(req.query.searchKey) : "";
+      const searchKey: string = req.query.searchKey
+        ? String(req.query.searchKey)
+        : "";
 
       let sort = req.query.sort;
-      
 
       // create sort object
       const sortObj: {
@@ -62,7 +65,7 @@ const queryFeatures = (documentNumber: "single" | "multiple"): RequestHandler =>
             sortObj[el] = "asc";
           }
         });
-      }else{
+      } else {
         sortObj["createdAt"] = "asc";
       }
 
@@ -72,7 +75,14 @@ const queryFeatures = (documentNumber: "single" | "multiple"): RequestHandler =>
         ...query,
       };
 
-      const excludedFields = ["page", "sort", "limit", "fields", "searchKey" , "populate"];
+      const excludedFields = [
+        "page",
+        "sort",
+        "limit",
+        "fields",
+        "searchKey",
+        "populate",
+      ];
 
       excludedFields.forEach((el) => delete filters[el]);
 

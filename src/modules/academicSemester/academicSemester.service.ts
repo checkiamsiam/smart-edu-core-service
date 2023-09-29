@@ -1,7 +1,10 @@
 import { AcademicSemester, Prisma } from "@prisma/client";
 import httpStatus from "http-status";
 import prismaHelper from "../../helpers/prisma.helper";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 import AppError from "../../utils/customError.util";
 
@@ -18,10 +21,16 @@ const create = async (payload: AcademicSemester): Promise<AcademicSemester> => {
   return newSemester;
 };
 
-const getAcademicSemesters = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<AcademicSemester>> => {
-  const whereConditions: Prisma.AcademicSemesterWhereInput = prismaHelper.findManyQueryHelper<Prisma.AcademicSemesterWhereInput>(queryFeatures, {
-    searchFields: ["title"],
-  });
+const getAcademicSemesters = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<AcademicSemester>> => {
+  const whereConditions: Prisma.AcademicSemesterWhereInput =
+    prismaHelper.findManyQueryHelper<Prisma.AcademicSemesterWhereInput>(
+      queryFeatures,
+      {
+        searchFields: ["title"],
+      }
+    );
 
   const query: Prisma.AcademicSemesterFindManyArgs = {
     where: whereConditions,
@@ -30,7 +39,10 @@ const getAcademicSemesters = async (queryFeatures: IQueryFeatures): Promise<IQue
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -52,14 +64,20 @@ const getAcademicSemesters = async (queryFeatures: IQueryFeatures): Promise<IQue
   };
 };
 
-const getSingleAcademicSemester = async (id: string, queryFeatures: IQueryFeatures): Promise<Partial<AcademicSemester> | null> => {
+const getSingleAcademicSemester = async (
+  id: string,
+  queryFeatures: IQueryFeatures
+): Promise<Partial<AcademicSemester> | null> => {
   const query: Prisma.AcademicSemesterFindUniqueArgs = {
     where: {
       id,
     },
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -70,28 +88,34 @@ const getSingleAcademicSemester = async (id: string, queryFeatures: IQueryFeatur
     }
   }
 
-  const result: Partial<AcademicSemester> | null = await prisma.academicSemester.findUnique(query);
+  const result: Partial<AcademicSemester> | null =
+    await prisma.academicSemester.findUnique(query);
 
   return result;
 };
 
-const updateAcademicSemester = async (id: string, payload: Partial<AcademicSemester>): Promise<Partial<AcademicSemester> | null> => {
-  const result: Partial<AcademicSemester> | null = await prisma.academicSemester.update({
-    where: {
-      id,
-    },
-    data: payload,
-  });
+const updateAcademicSemester = async (
+  id: string,
+  payload: Partial<AcademicSemester>
+): Promise<Partial<AcademicSemester> | null> => {
+  const result: Partial<AcademicSemester> | null =
+    await prisma.academicSemester.update({
+      where: {
+        id,
+      },
+      data: payload,
+    });
 
   return result;
 };
 
 const deleteAcademicSemester = async (id: string) => {
-  const result: Partial<AcademicSemester> | null = await prisma.academicSemester.delete({
-    where: {
-      id,
-    },
-  });
+  const result: Partial<AcademicSemester> | null =
+    await prisma.academicSemester.delete({
+      where: {
+        id,
+      },
+    });
 
   return result;
 };

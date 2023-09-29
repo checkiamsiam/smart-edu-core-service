@@ -1,26 +1,39 @@
-import { Prisma, StudentEnrolledCourse, StudentEnrolledCourseStatus } from "@prisma/client";
+import {
+  Prisma,
+  StudentEnrolledCourse,
+  StudentEnrolledCourseStatus,
+} from "@prisma/client";
 import httpStatus from "http-status";
 import prismaHelper from "../../helpers/prisma.helper";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 import AppError from "../../utils/customError.util";
 
-const create = async (payload: StudentEnrolledCourse): Promise<StudentEnrolledCourse> => {
-  const isCourseOngoingOrCompleted = await prisma.studentEnrolledCourse.findFirst({
-    where: {
-      OR: [
-        {
-          status: StudentEnrolledCourseStatus.ONGOING,
-        },
-        {
-          status: StudentEnrolledCourseStatus.COMPLETED,
-        },
-      ],
-    },
-  });
+const create = async (
+  payload: StudentEnrolledCourse
+): Promise<StudentEnrolledCourse> => {
+  const isCourseOngoingOrCompleted =
+    await prisma.studentEnrolledCourse.findFirst({
+      where: {
+        OR: [
+          {
+            status: StudentEnrolledCourseStatus.ONGOING,
+          },
+          {
+            status: StudentEnrolledCourseStatus.COMPLETED,
+          },
+        ],
+      },
+    });
 
   if (isCourseOngoingOrCompleted) {
-    throw new AppError(`There is already an ${isCourseOngoingOrCompleted.status?.toLowerCase()} registration`, httpStatus.BAD_REQUEST);
+    throw new AppError(
+      `There is already an ${isCourseOngoingOrCompleted.status?.toLowerCase()} registration`,
+      httpStatus.BAD_REQUEST
+    );
   }
   const newAd = await prisma.studentEnrolledCourse.create({
     data: payload,
@@ -28,18 +41,21 @@ const create = async (payload: StudentEnrolledCourse): Promise<StudentEnrolledCo
   return newAd;
 };
 
-const getStudentEnrolledCourses = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<StudentEnrolledCourse>> => {
-  const whereConditions: Prisma.StudentEnrolledCourseWhereInput = prismaHelper.findManyQueryHelper<Prisma.StudentEnrolledCourseWhereInput>(
-    queryFeatures,
-    {
-      searchFields: [],
-      relationalFields: {
-        academicSemesterId: "academicSemester",
-        studentId: "student",
-        courseId: "course",
-      },
-    }
-  );
+const getStudentEnrolledCourses = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<StudentEnrolledCourse>> => {
+  const whereConditions: Prisma.StudentEnrolledCourseWhereInput =
+    prismaHelper.findManyQueryHelper<Prisma.StudentEnrolledCourseWhereInput>(
+      queryFeatures,
+      {
+        searchFields: [],
+        relationalFields: {
+          academicSemesterId: "academicSemester",
+          studentId: "student",
+          courseId: "course",
+        },
+      }
+    );
 
   const query: Prisma.StudentEnrolledCourseFindManyArgs = {
     where: whereConditions,
@@ -48,7 +64,10 @@ const getStudentEnrolledCourses = async (queryFeatures: IQueryFeatures): Promise
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -69,14 +88,20 @@ const getStudentEnrolledCourses = async (queryFeatures: IQueryFeatures): Promise
   };
 };
 
-const getSingleStudentEnrolledCourse = async (id: string, queryFeatures: IQueryFeatures): Promise<Partial<StudentEnrolledCourse> | null> => {
+const getSingleStudentEnrolledCourse = async (
+  id: string,
+  queryFeatures: IQueryFeatures
+): Promise<Partial<StudentEnrolledCourse> | null> => {
   const query: Prisma.StudentEnrolledCourseFindUniqueArgs = {
     where: {
       id,
     },
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -87,28 +112,34 @@ const getSingleStudentEnrolledCourse = async (id: string, queryFeatures: IQueryF
     }
   }
 
-  const result: Partial<StudentEnrolledCourse> | null = await prisma.studentEnrolledCourse.findUnique(query);
+  const result: Partial<StudentEnrolledCourse> | null =
+    await prisma.studentEnrolledCourse.findUnique(query);
 
   return result;
 };
 
-const updateStudentEnrolledCourse = async (id: string, payload: Partial<StudentEnrolledCourse>): Promise<Partial<StudentEnrolledCourse> | null> => {
-  const result: Partial<StudentEnrolledCourse> | null = await prisma.studentEnrolledCourse.update({
-    where: {
-      id,
-    },
-    data: payload,
-  });
+const updateStudentEnrolledCourse = async (
+  id: string,
+  payload: Partial<StudentEnrolledCourse>
+): Promise<Partial<StudentEnrolledCourse> | null> => {
+  const result: Partial<StudentEnrolledCourse> | null =
+    await prisma.studentEnrolledCourse.update({
+      where: {
+        id,
+      },
+      data: payload,
+    });
 
   return result;
 };
 
 const deleteStudentEnrolledCourse = async (id: string) => {
-  const result: Partial<StudentEnrolledCourse> | null = await prisma.studentEnrolledCourse.delete({
-    where: {
-      id,
-    },
-  });
+  const result: Partial<StudentEnrolledCourse> | null =
+    await prisma.studentEnrolledCourse.delete({
+      where: {
+        id,
+      },
+    });
 
   return result;
 };

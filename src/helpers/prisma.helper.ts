@@ -5,7 +5,10 @@ interface IOptions {
   relationalFields?: { [key: string]: string };
 }
 
-const findManyQueryHelper = <T>(queryFeatures: IQueryFeatures, options: IOptions): T => {
+const findManyQueryHelper = <T>(
+  queryFeatures: IQueryFeatures,
+  options: IOptions
+): T => {
   const andConditions = [];
 
   if (queryFeatures.searchKey) {
@@ -39,7 +42,9 @@ const findManyQueryHelper = <T>(queryFeatures: IQueryFeatures, options: IOptions
     });
   }
 
-  const whereConditions: T = (andConditions.length > 0 ? { AND: andConditions } : {}) as T;
+  const whereConditions: T = (
+    andConditions.length > 0 ? { AND: andConditions } : {}
+  ) as T;
 
   return whereConditions;
 };

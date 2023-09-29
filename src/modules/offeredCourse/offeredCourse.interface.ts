@@ -1,5 +1,5 @@
 export type ICreateOfferedCourse = {
-  academicDepartmentId: string,
-  semesterRegistrationId: string,
-  courseIds: string[]
-}
+  academicDepartmentId: string;
+  semesterRegistrationId: string;
+  courseIds: string[];
+};

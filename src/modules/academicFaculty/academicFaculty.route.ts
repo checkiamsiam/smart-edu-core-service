@@ -15,9 +15,17 @@ academicFacultyRoutes.post(
   academicFacultyController.createAcademicFaculty
 );
 
-academicFacultyRoutes.get("/", queryFeatures("multiple"), academicFacultyController.getAcademicFaculties);
+academicFacultyRoutes.get(
+  "/",
+  queryFeatures("multiple"),
+  academicFacultyController.getAcademicFaculties
+);
 
-academicFacultyRoutes.get("/:id", queryFeatures("single"), academicFacultyController.getSigleAcademicFaculty);
+academicFacultyRoutes.get(
+  "/:id",
+  queryFeatures("single"),
+  academicFacultyController.getSigleAcademicFaculty
+);
 
 academicFacultyRoutes.put(
   "/update/:id",
@@ -26,6 +34,10 @@ academicFacultyRoutes.put(
   academicFacultyController.updateAcademicFaculty
 );
 
-academicFacultyRoutes.delete("/delete/:id", authorization(userRoleEnum.admin), academicFacultyController.deleteAcademicFaculty);
+academicFacultyRoutes.delete(
+  "/delete/:id",
+  authorization(userRoleEnum.admin),
+  academicFacultyController.deleteAcademicFaculty
+);
 
 export default academicFacultyRoutes;

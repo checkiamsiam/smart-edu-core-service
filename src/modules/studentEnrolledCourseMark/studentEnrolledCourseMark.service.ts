@@ -1,13 +1,28 @@
-import { ExamType, Prisma, PrismaClient, StudentEnrolledCourseMark, StudentEnrolledCourseStatus } from "@prisma/client";
-import { DefaultArgs, PrismaClientOptions } from "@prisma/client/runtime/library";
+import {
+  ExamType,
+  Prisma,
+  PrismaClient,
+  StudentEnrolledCourseMark,
+  StudentEnrolledCourseStatus,
+} from "@prisma/client";
+import {
+  DefaultArgs,
+  PrismaClientOptions,
+} from "@prisma/client/runtime/library";
 import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
 import prismaHelper from "../../helpers/prisma.helper";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 import AppError from "../../utils/customError.util";
 import { studentEnrolledCourseMarkUtils } from "./studentEnrolledCourse.util";
-import { IUpdateStudentCourseFinalMarksPayload, IUpdateStudentMarksPayload } from "./studentEnrolledCourseMark.interface";
+import {
+  IUpdateStudentCourseFinalMarksPayload,
+  IUpdateStudentMarksPayload,
+} from "./studentEnrolledCourseMark.interface";
 
 const createStudentEnrolledCourseDefaultMark = async (
   prismaClient: Omit<
@@ -20,20 +35,21 @@ const createStudentEnrolledCourseDefaultMark = async (
     academicSemesterId: string;
   }
 ) => {
-  const isExitMidtermData = await prismaClient.studentEnrolledCourseMark.findFirst({
-    where: {
-      examType: ExamType.MIDTERM,
-      student: {
-        id: payload.studentId,
+  const isExitMidtermData =
+    await prismaClient.studentEnrolledCourseMark.findFirst({
+      where: {
+        examType: ExamType.MIDTERM,
+        student: {
+          id: payload.studentId,
+        },
+        studentEnrolledCourse: {
+          id: payload.studentEnrolledCourseId,
+        },
+        academicSemester: {
+          id: payload.academicSemesterId,
+        },
       },
-      studentEnrolledCourse: {
-        id: payload.studentEnrolledCourseId,
-      },
-      academicSemester: {
-        id: payload.academicSemesterId,
-      },
-    },
-  });
+    });
   if (!isExitMidtermData) {
     await prismaClient.studentEnrolledCourseMark.create({
       data: {
@@ -57,20 +73,21 @@ const createStudentEnrolledCourseDefaultMark = async (
     });
   }
 
-  const isExistFinalData = await prismaClient.studentEnrolledCourseMark.findFirst({
-    where: {
-      examType: ExamType.FINAL,
-      student: {
-        id: payload.studentId,
+  const isExistFinalData =
+    await prismaClient.studentEnrolledCourseMark.findFirst({
+      where: {
+        examType: ExamType.FINAL,
+        student: {
+          id: payload.studentId,
+        },
+        studentEnrolledCourse: {
+          id: payload.studentEnrolledCourseId,
+        },
+        academicSemester: {
+          id: payload.academicSemesterId,
+        },
       },
-      studentEnrolledCourse: {
-        id: payload.studentEnrolledCourseId,
-      },
-      academicSemester: {
-        id: payload.academicSemesterId,
-      },
-    },
-  });
+    });
 
   if (!isExistFinalData) {
     await prismaClient.studentEnrolledCourseMark.create({
@@ -96,18 +113,21 @@ const createStudentEnrolledCourseDefaultMark = async (
   }
 };
 
-const getStudentEnrolledCourseMarks = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<StudentEnrolledCourseMark>> => {
-  const whereConditions: Prisma.StudentEnrolledCourseMarkWhereInput = prismaHelper.findManyQueryHelper<Prisma.StudentEnrolledCourseMarkWhereInput>(
-    queryFeatures,
-    {
-      searchFields: ["examType", "grade"],
-      relationalFields: {
-        academicSemesterId: "academicSemester",
-        studentId: "student",
-        studentEnrolledCourseId: "studentEnrolledCourse",
-      },
-    }
-  );
+const getStudentEnrolledCourseMarks = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<StudentEnrolledCourseMark>> => {
+  const whereConditions: Prisma.StudentEnrolledCourseMarkWhereInput =
+    prismaHelper.findManyQueryHelper<Prisma.StudentEnrolledCourseMarkWhereInput>(
+      queryFeatures,
+      {
+        searchFields: ["examType", "grade"],
+        relationalFields: {
+          academicSemesterId: "academicSemester",
+          studentId: "student",
+          studentEnrolledCourseId: "studentEnrolledCourse",
+        },
+      }
+    );
 
   const query: Prisma.StudentEnrolledCourseMarkFindManyArgs = {
     where: whereConditions,
@@ -116,7 +136,10 @@ const getStudentEnrolledCourseMarks = async (queryFeatures: IQueryFeatures): Pro
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       ...queryFeatures.populate,
     };
@@ -139,25 +162,29 @@ const getStudentEnrolledCourseMarks = async (queryFeatures: IQueryFeatures): Pro
 const updateStudentMarks = async (payload: IUpdateStudentMarksPayload) => {
   const { studentId, academicSemesterId, courseId, examType, marks } = payload;
 
-  const studentEnrolledCourseMarks = await prisma.studentEnrolledCourseMark.findFirst({
-    where: {
-      student: {
-        id: studentId,
-      },
-      academicSemester: {
-        id: academicSemesterId,
-      },
-      studentEnrolledCourse: {
-        course: {
-          id: courseId,
+  const studentEnrolledCourseMarks =
+    await prisma.studentEnrolledCourseMark.findFirst({
+      where: {
+        student: {
+          id: studentId,
         },
+        academicSemester: {
+          id: academicSemesterId,
+        },
+        studentEnrolledCourse: {
+          course: {
+            id: courseId,
+          },
+        },
+        examType,
       },
-      examType,
-    },
-  });
+    });
 
   if (!studentEnrolledCourseMarks) {
-    throw new AppError("Student enrolled course mark not found!", httpStatus.BAD_REQUEST);
+    throw new AppError(
+      "Student enrolled course mark not found!",
+      httpStatus.BAD_REQUEST
+    );
   }
   const result = studentEnrolledCourseMarkUtils.getGradeFromMarks(marks);
 
@@ -174,7 +201,9 @@ const updateStudentMarks = async (payload: IUpdateStudentMarksPayload) => {
   return updateStudentMarks;
 };
 
-const updateFinalMarks = async (payload: IUpdateStudentCourseFinalMarksPayload) => {
+const updateFinalMarks = async (
+  payload: IUpdateStudentCourseFinalMarksPayload
+) => {
   const { studentId, academicSemesterId, courseId } = payload;
   const studentEnrolledCourse = await prisma.studentEnrolledCourse.findFirst({
     where: {
@@ -191,34 +220,48 @@ const updateFinalMarks = async (payload: IUpdateStudentCourseFinalMarksPayload) 
   });
 
   if (!studentEnrolledCourse) {
-    throw new AppError("Student enrolled course data not found!", httpStatus.BAD_REQUEST);
+    throw new AppError(
+      "Student enrolled course data not found!",
+      httpStatus.BAD_REQUEST
+    );
   }
 
-  const studentEnrolledCourseMarks = await prisma.studentEnrolledCourseMark.findMany({
-    where: {
-      student: {
-        id: studentId,
-      },
-      academicSemester: {
-        id: academicSemesterId,
-      },
-      studentEnrolledCourse: {
-        course: {
-          id: courseId,
+  const studentEnrolledCourseMarks =
+    await prisma.studentEnrolledCourseMark.findMany({
+      where: {
+        student: {
+          id: studentId,
+        },
+        academicSemester: {
+          id: academicSemesterId,
+        },
+        studentEnrolledCourse: {
+          course: {
+            id: courseId,
+          },
         },
       },
-    },
-  });
+    });
 
   if (!studentEnrolledCourseMarks.length) {
-    throw new AppError("student enrolled course mark not found!", httpStatus.BAD_REQUEST);
+    throw new AppError(
+      "student enrolled course mark not found!",
+      httpStatus.BAD_REQUEST
+    );
   }
 
-  const midTermMarks = studentEnrolledCourseMarks.find((item) => item.examType === ExamType.MIDTERM)?.marks || 0;
-  const finalTermMarks = studentEnrolledCourseMarks.find((item) => item.examType === ExamType.FINAL)?.marks || 0;
+  const midTermMarks =
+    studentEnrolledCourseMarks.find(
+      (item) => item.examType === ExamType.MIDTERM
+    )?.marks || 0;
+  const finalTermMarks =
+    studentEnrolledCourseMarks.find((item) => item.examType === ExamType.FINAL)
+      ?.marks || 0;
 
-  const totalFinalMarks = Math.ceil(midTermMarks * 0.4) + Math.ceil(finalTermMarks * 0.6);
-  const result = studentEnrolledCourseMarkUtils.getGradeFromMarks(totalFinalMarks);
+  const totalFinalMarks =
+    Math.ceil(midTermMarks * 0.4) + Math.ceil(finalTermMarks * 0.6);
+  const result =
+    studentEnrolledCourseMarkUtils.getGradeFromMarks(totalFinalMarks);
 
   await prisma.studentEnrolledCourse.updateMany({
     where: {
@@ -252,7 +295,9 @@ const updateFinalMarks = async (payload: IUpdateStudentCourseFinalMarksPayload) 
     },
   });
 
-  const academicResult = await studentEnrolledCourseMarkUtils.calcCGPAandGrade(grades);
+  const academicResult = await studentEnrolledCourseMarkUtils.calcCGPAandGrade(
+    grades
+  );
 
   const studentAcademicInfo = await prisma.studentAcademicInfo.findFirst({
     where: {
@@ -289,7 +334,10 @@ const updateFinalMarks = async (payload: IUpdateStudentCourseFinalMarksPayload) 
   return grades;
 };
 
-const getMyCourseMarks = async (queryFeatures: IQueryFeatures, authUser: JwtPayload): Promise<IQueryResult<StudentEnrolledCourseMark>> => {
+const getMyCourseMarks = async (
+  queryFeatures: IQueryFeatures,
+  authUser: JwtPayload
+): Promise<IQueryResult<StudentEnrolledCourseMark>> => {
   const student = await prisma.student.findFirst({
     where: {
       studentId: authUser.id,
@@ -300,17 +348,18 @@ const getMyCourseMarks = async (queryFeatures: IQueryFeatures, authUser: JwtPayl
     throw new AppError("Student not found", httpStatus.NOT_FOUND);
   }
 
-  const whereConditions: Prisma.StudentEnrolledCourseMarkWhereInput = prismaHelper.findManyQueryHelper<Prisma.StudentEnrolledCourseMarkWhereInput>(
-    queryFeatures,
-    {
-      searchFields: ["examType", "grade"],
-      relationalFields: {
-        academicSemesterId: "academicSemester",
-        studentId: "student",
-        studentEnrolledCourseId: "studentEnrolledCourse",
-      },
-    }
-  );
+  const whereConditions: Prisma.StudentEnrolledCourseMarkWhereInput =
+    prismaHelper.findManyQueryHelper<Prisma.StudentEnrolledCourseMarkWhereInput>(
+      queryFeatures,
+      {
+        searchFields: ["examType", "grade"],
+        relationalFields: {
+          academicSemesterId: "academicSemester",
+          studentId: "student",
+          studentEnrolledCourseId: "studentEnrolledCourse",
+        },
+      }
+    );
 
   const query: Prisma.StudentEnrolledCourseMarkFindManyArgs = {
     where: whereConditions,
@@ -319,7 +368,10 @@ const getMyCourseMarks = async (queryFeatures: IQueryFeatures, authUser: JwtPayl
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       ...queryFeatures.populate,
     };

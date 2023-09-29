@@ -1,6 +1,9 @@
 import { Building, Prisma } from "@prisma/client";
 import prismaHelper from "../../helpers/prisma.helper";
-import { IQueryFeatures, IQueryResult } from "../../interfaces/queryFeatures.interface";
+import {
+  IQueryFeatures,
+  IQueryResult,
+} from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 
 const create = async (payload: Building): Promise<Building> => {
@@ -10,10 +13,13 @@ const create = async (payload: Building): Promise<Building> => {
   return newb;
 };
 
-const getBuildings = async (queryFeatures: IQueryFeatures): Promise<IQueryResult<Building>> => {
-  const whereConditions: Prisma.BuildingWhereInput = prismaHelper.findManyQueryHelper<Prisma.BuildingWhereInput>(queryFeatures, {
-    searchFields: ["title"],
-  });
+const getBuildings = async (
+  queryFeatures: IQueryFeatures
+): Promise<IQueryResult<Building>> => {
+  const whereConditions: Prisma.BuildingWhereInput =
+    prismaHelper.findManyQueryHelper<Prisma.BuildingWhereInput>(queryFeatures, {
+      searchFields: ["title"],
+    });
 
   const query: Prisma.BuildingFindManyArgs = {
     where: whereConditions,
@@ -22,7 +28,10 @@ const getBuildings = async (queryFeatures: IQueryFeatures): Promise<IQueryResult
     orderBy: queryFeatures.sort,
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -32,7 +41,10 @@ const getBuildings = async (queryFeatures: IQueryFeatures): Promise<IQueryResult
       query.select = { id: true, ...queryFeatures.fields };
     }
   }
-  const [result, count] = await prisma.$transaction([prisma.building.findMany(query), prisma.building.count({ where: whereConditions })]);
+  const [result, count] = await prisma.$transaction([
+    prisma.building.findMany(query),
+    prisma.building.count({ where: whereConditions }),
+  ]);
 
   return {
     data: result,
@@ -40,14 +52,20 @@ const getBuildings = async (queryFeatures: IQueryFeatures): Promise<IQueryResult
   };
 };
 
-const getSingleBuilding = async (id: string, queryFeatures: IQueryFeatures): Promise<Partial<Building> | null> => {
+const getSingleBuilding = async (
+  id: string,
+  queryFeatures: IQueryFeatures
+): Promise<Partial<Building> | null> => {
   const query: Prisma.BuildingFindUniqueArgs = {
     where: {
       id,
     },
   };
 
-  if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
+  if (
+    queryFeatures.populate &&
+    Object.keys(queryFeatures.populate).length > 0
+  ) {
     query.include = {
       _count: true,
       ...queryFeatures.populate,
@@ -58,12 +76,17 @@ const getSingleBuilding = async (id: string, queryFeatures: IQueryFeatures): Pro
     }
   }
 
-  const result: Partial<Building> | null = await prisma.building.findUnique(query);
+  const result: Partial<Building> | null = await prisma.building.findUnique(
+    query
+  );
 
   return result;
 };
 
-const updateBuilding = async (id: string, payload: Partial<Building>): Promise<Partial<Building> | null> => {
+const updateBuilding = async (
+  id: string,
+  payload: Partial<Building>
+): Promise<Partial<Building> | null> => {
   const result: Partial<Building> | null = await prisma.building.update({
     where: {
       id,

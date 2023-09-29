@@ -1,4 +1,4 @@
 export type IEnrollCoursePayload = {
-  offeredCourseId: string,
-  offeredCourseSectionId: string
-}
+  offeredCourseId: string;
+  offeredCourseSectionId: string;
+};

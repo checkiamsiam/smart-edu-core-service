@@ -15,9 +15,17 @@ offeredCourseClassScheduleRoutes.post(
   offeredCourseClassScheduleController.createOfferedCourseClassSchedule
 );
 
-offeredCourseClassScheduleRoutes.get("/", queryFeatures("multiple"), offeredCourseClassScheduleController.getOfferedCourseClassSchedules);
+offeredCourseClassScheduleRoutes.get(
+  "/",
+  queryFeatures("multiple"),
+  offeredCourseClassScheduleController.getOfferedCourseClassSchedules
+);
 
-offeredCourseClassScheduleRoutes.get("/:id", queryFeatures("single"), offeredCourseClassScheduleController.getSingleOfferedCourseClassSchedule);
+offeredCourseClassScheduleRoutes.get(
+  "/:id",
+  queryFeatures("single"),
+  offeredCourseClassScheduleController.getSingleOfferedCourseClassSchedule
+);
 
 offeredCourseClassScheduleRoutes.put(
   "/update/:id",

@@ -15,9 +15,17 @@ buildingRoutes.post(
   buildingController.createBuilding
 );
 
-buildingRoutes.get("/", queryFeatures("multiple"), buildingController.getBuildings);
+buildingRoutes.get(
+  "/",
+  queryFeatures("multiple"),
+  buildingController.getBuildings
+);
 
-buildingRoutes.get("/:id", queryFeatures("single"), buildingController.getSingleBuilding);
+buildingRoutes.get(
+  "/:id",
+  queryFeatures("single"),
+  buildingController.getSingleBuilding
+);
 
 buildingRoutes.put(
   "/update/:id",
@@ -26,6 +34,10 @@ buildingRoutes.put(
   buildingController.updateBuilding
 );
 
-buildingRoutes.delete("/delete/:id", authorization(userRoleEnum.admin), buildingController.deleteBuilding);
+buildingRoutes.delete(
+  "/delete/:id",
+  authorization(userRoleEnum.admin),
+  buildingController.deleteBuilding
+);
 
 export default buildingRoutes;

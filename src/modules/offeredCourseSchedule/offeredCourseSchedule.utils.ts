@@ -28,16 +28,16 @@ const hasTimeConflict = (
   return false;
 };
 
-
 const checkRoomAvailable = async (data: OfferedCourseClassSchedule) => {
-  const alreadyBookedRoomOnDay = await prisma.offeredCourseClassSchedule.findMany({
-    where: {
-      dayOfWeek: data.dayOfWeek,
-      room: {
-        id: data.roomId,
+  const alreadyBookedRoomOnDay =
+    await prisma.offeredCourseClassSchedule.findMany({
+      where: {
+        dayOfWeek: data.dayOfWeek,
+        room: {
+          id: data.roomId,
+        },
       },
-    },
-  });
+    });
 
   const existingSlots = alreadyBookedRoomOnDay.map((schedule) => ({
     startTime: schedule.startTime,
@@ -52,19 +52,20 @@ const checkRoomAvailable = async (data: OfferedCourseClassSchedule) => {
   };
 
   if (hasTimeConflict(existingSlots, newSlot)) {
-    throw new AppError("Room is already booked!" , httpStatus.CONFLICT);
+    throw new AppError("Room is already booked!", httpStatus.CONFLICT);
   }
 };
 
 const checkFacultyAvailable = async (data: OfferedCourseClassSchedule) => {
-  const alreadyFcultyAssigned = await prisma.offeredCourseClassSchedule.findMany({
-    where: {
-      dayOfWeek: data.dayOfWeek,
-      faculty: {
-        id: data.facultyId,
+  const alreadyFcultyAssigned =
+    await prisma.offeredCourseClassSchedule.findMany({
+      where: {
+        dayOfWeek: data.dayOfWeek,
+        faculty: {
+          id: data.facultyId,
+        },
       },
-    },
-  });
+    });
 
   const existingSlots = alreadyFcultyAssigned.map((schedule) => ({
     startTime: schedule.startTime,
@@ -79,7 +80,7 @@ const checkFacultyAvailable = async (data: OfferedCourseClassSchedule) => {
   };
 
   if (hasTimeConflict(existingSlots, newSlot)) {
-    throw new AppError("Faculty is already booked!" , httpStatus.CONFLICT );
+    throw new AppError("Faculty is already booked!", httpStatus.CONFLICT);
   }
 };
 

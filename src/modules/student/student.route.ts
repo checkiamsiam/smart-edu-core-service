@@ -15,14 +15,36 @@ studentRoute.post(
   studentControllers.createStudent
 );
 
-studentRoute.get("/", queryFeatures("multiple"), studentControllers.getStudents);
+studentRoute.get(
+  "/",
+  queryFeatures("multiple"),
+  studentControllers.getStudents
+);
 
-studentRoute.get("/my-courses", queryFeatures("multiple"), authorization(userRoleEnum.student), studentControllers.myCourses);
+studentRoute.get(
+  "/my-courses",
+  queryFeatures("multiple"),
+  authorization(userRoleEnum.student),
+  studentControllers.myCourses
+);
 
-studentRoute.get("/my-course-schedules", authorization(userRoleEnum.student), queryFeatures("multiple"), studentControllers.getMyCourseSchedules);
-studentRoute.get("/my-academic-info", authorization(userRoleEnum.student), studentControllers.myAcademicInfo);
+studentRoute.get(
+  "/my-course-schedules",
+  authorization(userRoleEnum.student),
+  queryFeatures("multiple"),
+  studentControllers.getMyCourseSchedules
+);
+studentRoute.get(
+  "/my-academic-info",
+  authorization(userRoleEnum.student),
+  studentControllers.myAcademicInfo
+);
 
-studentRoute.get("/:id", queryFeatures("single"), studentControllers.getSingleStudent);
+studentRoute.get(
+  "/:id",
+  queryFeatures("single"),
+  studentControllers.getSingleStudent
+);
 
 studentRoute.put(
   "/update/:id",
@@ -31,6 +53,10 @@ studentRoute.put(
   studentControllers.updateStudent
 );
 
-studentRoute.delete("/delete/:id", authorization(userRoleEnum.admin), studentControllers.deleteStudent);
+studentRoute.delete(
+  "/delete/:id",
+  authorization(userRoleEnum.admin),
+  studentControllers.deleteStudent
+);
 
 export default studentRoute;

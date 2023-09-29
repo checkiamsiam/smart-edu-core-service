@@ -28,7 +28,12 @@ const updateSemesterRegistrationReq = z.object({
     academicSemesterId: z.string().optional(),
     minCredit: z.number().optional(),
     maxCredit: z.number().optional(),
-    status: z.enum([...Object.values(SemesterRegistrationStatus)] as [string, ...string[]], {}).optional(),
+    status: z
+      .enum(
+        [...Object.values(SemesterRegistrationStatus)] as [string, ...string[]],
+        {}
+      )
+      .optional(),
   }),
 });
 
