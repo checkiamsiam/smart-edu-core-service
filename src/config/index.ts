@@ -9,6 +9,10 @@ const config: IConfig = {
   jwt: {
     secret: process.env.JWT_SECRET || "secret",
   },
+  redis: {
+    url: process.env.REDIS_URL || "redis://localhost:6379",
+    expires_in: process.env.REDIS_EXPIRES_IN || "3600",
+  },
 };
 
 export default config;

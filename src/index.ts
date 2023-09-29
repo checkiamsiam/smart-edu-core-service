@@ -2,6 +2,7 @@ import { Server } from "http";
 import app from "./app";
 import config from "./config";
 import { print, printError } from "./utils/customLogger.util";
+import { redis } from "./utils/redis.util";
 
 // handle uncaughtExceptions
 process.on("uncaughtException", (error) => {
@@ -13,6 +14,7 @@ let server: Server;
 
 const runServer = async (): Promise<void> => {
   try {
+    await redis.connect();
     server = app.listen(config.port, () => {
       if (config.isDevelopment) {
         print.info(`✔ Server started at http://localhost:${config.port}`);

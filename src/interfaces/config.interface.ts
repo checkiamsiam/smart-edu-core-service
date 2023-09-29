@@ -4,6 +4,10 @@ interface IConfig {
   jwt: {
     secret: string;
   };
+  redis: {
+    url: string;
+    expires_in: number | string;
+  };
 }
 
 export default IConfig;
