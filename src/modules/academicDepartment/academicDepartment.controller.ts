@@ -3,13 +3,27 @@ import { Request, RequestHandler, Response } from "express";
 import httpStatus from "http-status";
 import catchAsyncErrors from "../../utils/catchAsyncError.util";
 import AppError from "../../utils/customError.util";
+import { redis } from "../../utils/redis.util";
 import sendResponse from "../../utils/sendResponse.util";
+import {
+  EVENT_ACADEMIC_DEPARTMENT_CREATED,
+  EVENT_ACADEMIC_DEPARTMENT_DELETED,
+  EVENT_ACADEMIC_DEPARTMENT_UPDATED,
+} from "./academicDepartment.constant";
 import academicDepartmentService from "./academicDepartment.service";
 
 const createAcademicDepartment: RequestHandler = catchAsyncErrors(
   async (req: Request, res: Response) => {
     const body: AcademicDepartment = req.body;
     const result = await academicDepartmentService.create(body);
+
+    if (result) {
+      await redis.publish(
+        EVENT_ACADEMIC_DEPARTMENT_CREATED,
+        JSON.stringify(result)
+      );
+    }
+
     sendResponse<AcademicDepartment>(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -67,7 +81,13 @@ const updateAcademicDepartment: RequestHandler = catchAsyncErrors(
 
     if (!result) {
       throw new AppError("Requrested Document Not Found", httpStatus.NOT_FOUND);
+    } else {
+      await redis.publish(
+        EVENT_ACADEMIC_DEPARTMENT_UPDATED,
+        JSON.stringify(result)
+      );
     }
+
     sendResponse<Partial<AcademicDepartment>>(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -84,6 +104,11 @@ const deleteAcademicDepartment: RequestHandler = catchAsyncErrors(
 
     if (!result) {
       throw new AppError("Requrested Document Not Found", httpStatus.NOT_FOUND);
+    } else {
+      await redis.publish(
+        EVENT_ACADEMIC_DEPARTMENT_DELETED,
+        JSON.stringify(result)
+      );
     }
     sendResponse<Partial<AcademicDepartment>>(res, {
       statusCode: httpStatus.OK,

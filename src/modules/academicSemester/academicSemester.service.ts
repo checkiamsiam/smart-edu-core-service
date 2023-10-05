@@ -7,6 +7,12 @@ import {
 } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
 import AppError from "../../utils/customError.util";
+import { redis } from "../../utils/redis.util";
+import {
+  EVENT_ACADEMIC_SEMESTER_CREATED,
+  EVENT_ACADEMIC_SEMESTER_DELETED,
+  EVENT_ACADEMIC_SEMESTER_UPDATED,
+} from "./academicSemester.constant";
 
 const create = async (payload: AcademicSemester): Promise<AcademicSemester> => {
   const isExist = await prisma.academicSemester.findFirst({
@@ -18,6 +24,13 @@ const create = async (payload: AcademicSemester): Promise<AcademicSemester> => {
   const newSemester = await prisma.academicSemester.create({
     data: payload,
   });
+
+  if (newSemester) {
+    await redis.publish(
+      EVENT_ACADEMIC_SEMESTER_CREATED,
+      JSON.stringify(newSemester)
+    );
+  }
   return newSemester;
 };
 
@@ -106,6 +119,13 @@ const updateAcademicSemester = async (
       data: payload,
     });
 
+  if (result) {
+    await redis.publish(
+      EVENT_ACADEMIC_SEMESTER_UPDATED,
+      JSON.stringify(result)
+    );
+  }
+
   return result;
 };
 
@@ -116,6 +136,13 @@ const deleteAcademicSemester = async (id: string) => {
         id,
       },
     });
+
+  if (result) {
+    await redis.publish(
+      EVENT_ACADEMIC_SEMESTER_DELETED,
+      JSON.stringify(result)
+    );
+  }
 
   return result;
 };

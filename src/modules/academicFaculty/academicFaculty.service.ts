@@ -5,11 +5,20 @@ import {
   IQueryResult,
 } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
+import { redis } from "../../utils/redis.util";
+import {
+  EVENT_ACADEMIC_FACULTY_CREATED,
+  EVENT_ACADEMIC_FACULTY_DELETED,
+  EVENT_ACADEMIC_FACULTY_UPDATED,
+} from "./academicFaculty.constant";
 
 const create = async (payload: AcademicFaculty): Promise<AcademicFaculty> => {
   const newAf = await prisma.academicFaculty.create({
     data: payload,
   });
+  if (newAf) {
+    await redis.publish(EVENT_ACADEMIC_FACULTY_CREATED, JSON.stringify(newAf));
+  }
   return newAf;
 };
 
@@ -97,6 +106,10 @@ const updateAcademicFaculty = async (
       data: payload,
     });
 
+  if (result) {
+    await redis.publish(EVENT_ACADEMIC_FACULTY_UPDATED, JSON.stringify(result));
+  }
+
   return result;
 };
 
@@ -107,6 +120,10 @@ const deleteAcademicFaculty = async (id: string) => {
         id,
       },
     });
+
+  if (result) {
+    await redis.publish(EVENT_ACADEMIC_FACULTY_DELETED, JSON.stringify(result));
+  }
 
   return result;
 };
