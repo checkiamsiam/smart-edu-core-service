@@ -6,7 +6,10 @@ import {
   IQueryResult,
 } from "../../interfaces/queryFeatures.interface";
 import prisma from "../../shared/prismaClient";
-import { IFacultyMyCourseStudentsRequest } from "./faculty.interface";
+import {
+  FacultyCreatedEvent,
+  IFacultyMyCourseStudentsRequest,
+} from "./faculty.interface";
 
 const create = async (payload: Faculty): Promise<Faculty> => {
   const newFaculty = await prisma.faculty.create({
@@ -319,6 +322,60 @@ const getMyCourseStudents = async (
   };
 };
 
+const createFacultyFromEvent = async (
+  e: FacultyCreatedEvent
+): Promise<void> => {
+  const faculty: Partial<Faculty> = {
+    facultyId: e.id,
+    firstName: e.name.firstName,
+    lastName: e.name.lastName,
+    middleName: e.name.middleName,
+    profileImage: e.profileImage,
+    email: e.email,
+    contactNo: e.contactNo,
+    gender: e.gender,
+    bloodGroup: e.bloodGroup,
+    designation: e.designation,
+    academicDepartmentId: e.academicDepartment.syncId,
+    academicFacultyId: e.academicFaculty.syncId,
+  };
+
+  const data = await create(faculty as Faculty);
+};
+
+const updateFacultyFromEvent = async (e: any): Promise<void> => {
+  const isExist = await prisma.faculty.findFirst({
+    where: {
+      facultyId: e.id,
+    },
+  });
+  if (!isExist) {
+    createFacultyFromEvent(e);
+  } else {
+    const facultyData: Partial<Faculty> = {
+      facultyId: e.id,
+      firstName: e.name.firstName,
+      lastName: e.name.lastName,
+      middleName: e.name.middleName,
+      profileImage: e.profileImage,
+      email: e.email,
+      contactNo: e.contactNo,
+      gender: e.gender,
+      bloodGroup: e.bloodGroup,
+      designation: e.designation,
+      academicDepartmentId: e.academicDepartment.syncId,
+      academicFacultyId: e.academicFaculty.syncId,
+    };
+
+    const res = await prisma.faculty.updateMany({
+      where: {
+        facultyId: e.id,
+      },
+      data: facultyData,
+    });
+  }
+};
+
 const facultyService = {
   create,
   getFaculties,
@@ -329,6 +386,8 @@ const facultyService = {
   removeCourses,
   myCourses,
   getMyCourseStudents,
+  createFacultyFromEvent,
+  updateFacultyFromEvent,
 };
 
 export default facultyService;
