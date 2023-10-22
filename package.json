@@ -7,6 +7,7 @@
     "dev": "set NODE_ENV=development&&ts-node-dev --files --rs --poll ./src/index.ts",
     "build": "tsc",
     "start": "tsc&&node ./dist/index.js",
+    "prisma": "npx prisma generate && npx prisma migrate dev --name init --preview-feature && npx prisma studio",
     "lint": "eslint .",
     "lint-fix": "eslint --ext .js,.ts src/ --fix",
     "format": "prettier --write src/**/*.{js,ts,json}",
