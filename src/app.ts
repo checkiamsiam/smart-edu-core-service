@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application } from "express";
 import helmet from "helmet";
@@ -7,12 +8,15 @@ import config from "./config";
 import globalErrorHandler from "./middleware/globalErrorHandler.middleware";
 import routes from "./routes";
 import sendResponse from "./utils/sendResponse.util";
-import cookieParser from "cookie-parser";
 const app: Application = express();
 
 //global app middleware
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
