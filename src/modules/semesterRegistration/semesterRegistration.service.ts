@@ -30,10 +30,10 @@ const create = async (
       where: {
         OR: [
           {
-            status: SemesterRegistrationStatus.upcoming,
+            status: SemesterRegistrationStatus.UPCOMING,
           },
           {
-            status: SemesterRegistrationStatus.ongoing,
+            status: SemesterRegistrationStatus.ONGOING,
           },
         ],
       },
@@ -146,8 +146,8 @@ const update = async (
 
   if (
     payload.status &&
-    isExist.status === SemesterRegistrationStatus.upcoming &&
-    payload.status !== SemesterRegistrationStatus.ongoing
+    isExist.status === SemesterRegistrationStatus.UPCOMING &&
+    payload.status !== SemesterRegistrationStatus.ONGOING
   ) {
     throw new AppError(
       "Can only move from UPCOMING to ONGOING",
@@ -157,8 +157,8 @@ const update = async (
 
   if (
     payload.status &&
-    isExist.status === SemesterRegistrationStatus.ongoing &&
-    payload.status !== SemesterRegistrationStatus.ended
+    isExist.status === SemesterRegistrationStatus.ONGOING &&
+    payload.status !== SemesterRegistrationStatus.ENDED
   ) {
     throw new AppError(
       "Can only move from ONGOING to ENDED",
@@ -213,15 +213,15 @@ const startStudentRegistration = async (
     where: {
       status: {
         in: [
-          SemesterRegistrationStatus.ongoing,
-          SemesterRegistrationStatus.upcoming,
+          SemesterRegistrationStatus.ONGOING,
+          SemesterRegistrationStatus.UPCOMING,
         ],
       },
     },
   });
 
   if (
-    semesterRegistrationInfo?.status === SemesterRegistrationStatus.upcoming
+    semesterRegistrationInfo?.status === SemesterRegistrationStatus.UPCOMING
   ) {
     throw new AppError(
       "Registration is not started yet",
@@ -277,7 +277,7 @@ const enrollIntoCourse = async (
 
   const semesterRegistration = await prisma.semesterRegistration.findFirst({
     where: {
-      status: SemesterRegistrationStatus.ongoing,
+      status: SemesterRegistrationStatus.ONGOING,
     },
   });
 
@@ -381,7 +381,7 @@ const withdrewFromCourse = async (
 
   const semesterRegistration = await prisma.semesterRegistration.findFirst({
     where: {
-      status: SemesterRegistrationStatus.ongoing,
+      status: SemesterRegistrationStatus.ONGOING,
     },
   });
 
@@ -457,7 +457,7 @@ const confirmMyRegistration = async (
 ): Promise<{ message: string }> => {
   const semesterRegistration = await prisma.semesterRegistration.findFirst({
     where: {
-      status: SemesterRegistrationStatus.ongoing,
+      status: SemesterRegistrationStatus.ONGOING,
     },
   });
 
@@ -519,7 +519,7 @@ const confirmMyRegistration = async (
 const getMyRegistration = async (authUserId: string) => {
   const semesterRegistration = await prisma.semesterRegistration.findFirst({
     where: {
-      status: SemesterRegistrationStatus.ongoing,
+      status: SemesterRegistrationStatus.ONGOING,
     },
     include: {
       academicSemester: true,
@@ -565,7 +565,7 @@ const startNewSemester = async (
     );
   }
 
-  if (semesterRegistration.status !== SemesterRegistrationStatus.ended) {
+  if (semesterRegistration.status !== SemesterRegistrationStatus.ENDED) {
     throw new AppError(
       "Semester Registration is not ended yet!",
       httpStatus.BAD_REQUEST
@@ -704,8 +704,8 @@ const getMySemesterRegCourses = async (authUserId: string) => {
     where: {
       status: {
         in: [
-          SemesterRegistrationStatus.upcoming,
-          SemesterRegistrationStatus.ongoing,
+          SemesterRegistrationStatus.UPCOMING,
+          SemesterRegistrationStatus.ONGOING,
         ],
       },
     },
