@@ -39,6 +39,7 @@ const getSemesterRegistrations: RequestHandler = catchAsyncErrors(
 const getSingleSemesterRegistration: RequestHandler = catchAsyncErrors(
   async (req: Request, res: Response) => {
     const id: string = req.params.id;
+    console.log("this from here");
     const result: Partial<SemesterRegistration> | null =
       await semesterRegistrationService.getSingleSemesterRegistration(
         id,

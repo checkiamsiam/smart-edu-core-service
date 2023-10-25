@@ -28,6 +28,12 @@ semesterRegistrationRoutes.get(
 );
 
 semesterRegistrationRoutes.get(
+  "/get-my-registration",
+  authorization(userRoleEnum.student),
+  semesterRegistrationController.getMyRegistration
+);
+
+semesterRegistrationRoutes.get(
   "/:id",
   queryFeatures("single"),
   semesterRegistrationController.getSingleSemesterRegistration
@@ -50,12 +56,6 @@ semesterRegistrationRoutes.post(
   "/start-registration",
   authorization(userRoleEnum.student),
   semesterRegistrationController.startStudentRegistration
-);
-
-semesterRegistrationRoutes.get(
-  "/get-my-registration",
-  authorization(userRoleEnum.student),
-  semesterRegistrationController.getMyRegistration
 );
 
 semesterRegistrationRoutes.post(

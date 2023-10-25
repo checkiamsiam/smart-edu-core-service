@@ -788,6 +788,7 @@ const getMySemesterRegCourses = async (authUserId: string) => {
     studentCompletedCourse,
     studentCurrentSemesterTakenCourse
   );
+
   return availableCourses;
 };
 
