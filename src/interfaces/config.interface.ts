@@ -8,6 +8,7 @@ interface IConfig {
     url: string;
     expires_in: number | string;
   };
+  initPaymentEndpoint: string;
 }
 
 export default IConfig;

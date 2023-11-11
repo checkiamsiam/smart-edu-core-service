@@ -13,6 +13,9 @@ const config: IConfig = {
     url: process.env.REDIS_URL || "redis://localhost:6379",
     expires_in: process.env.REDIS_EXPIRES_IN || "3600",
   },
+  initPaymentEndpoint:
+    process.env.INIT_PAYMENT_ENDPOINT ||
+    "http://localhost:5003/api/v1/payment/init",
 };
 
 export default config;

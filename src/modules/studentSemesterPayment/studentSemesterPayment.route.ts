@@ -13,4 +13,22 @@ studentSemesterPaymentRoutes.get(
   studentSemesterPaymentController.getStudentSemesterPayments
 );
 
+studentSemesterPaymentRoutes.get(
+  "/my-semester-payments",
+  authorization(userRoleEnum.student),
+  queryFeatures("multiple"),
+  studentSemesterPaymentController.getMySemesterPayments
+);
+
+studentSemesterPaymentRoutes.post(
+  "/initiate-payment",
+  authorization(userRoleEnum.student),
+  studentSemesterPaymentController.initiatePayment
+);
+studentSemesterPaymentRoutes.post(
+  "/complete-payment",
+  authorization(userRoleEnum.student),
+  studentSemesterPaymentController.completePayment
+);
+
 export default studentSemesterPaymentRoutes;
